@@ -1,0 +1,129 @@
+import { SITE, THEMES, ThemeKey, CITIES } from '@/lib/tokens';
+
+interface FilterBarProps {
+  selectedCities?: string[];
+  activeThemes?: ThemeKey[];
+  view?: 'list' | 'calendar' | 'map';
+  onCityToggle?: (city: string) => void;
+  onThemeToggle?: (key: ThemeKey) => void;
+  onViewChange?: (view: 'list' | 'calendar' | 'map') => void;
+}
+
+export function FilterBar({
+  selectedCities = [],
+  activeThemes = [],
+  view,
+  onCityToggle,
+  onThemeToggle,
+  onViewChange,
+}: FilterBarProps) {
+  const CITY_LIST = CITIES.filter(c => c !== 'All cities');
+  const allCitiesSelected = selectedCities.length === 0;
+
+  return (
+    <div style={{
+      padding: '20px 48px', borderBottom: `1px solid ${SITE.rule}`, background: SITE.paper,
+    }}>
+      {/* Cities */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+        <span style={{
+          fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+          color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase', minWidth: 40,
+        }}>City</span>
+        <span
+          onClick={() => onCityToggle?.('__all__')}
+          style={{
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+            letterSpacing: '0.1em', textTransform: 'uppercase',
+            padding: '4px 10px',
+            color: allCitiesSelected ? '#fff' : SITE.ink,
+            background: allCitiesSelected ? SITE.ink : 'transparent',
+            border: `1px solid ${SITE.ink}`,
+            cursor: 'pointer',
+          }}
+        >
+          All
+        </span>
+        {CITY_LIST.map(city => {
+          const on = selectedCities.includes(city);
+          return (
+            <span
+              key={city}
+              onClick={() => onCityToggle?.(city)}
+              style={{
+                fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                padding: '4px 10px',
+                color: on ? '#fff' : SITE.inkSoft,
+                background: on ? SITE.ink : 'transparent',
+                border: `1px solid ${on ? SITE.ink : SITE.rule}`,
+                cursor: 'pointer',
+              }}
+            >
+              {city}
+            </span>
+          );
+        })}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+        {/* Theme chips */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+            color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
+          }}>Themes</span>
+          {THEMES.map(t => {
+            const on = activeThemes.includes(t.key as ThemeKey);
+            return (
+              <span
+                key={t.key}
+                onClick={() => onThemeToggle?.(t.key as ThemeKey)}
+                style={{
+                  fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+                  letterSpacing: '0.1em', textTransform: 'uppercase',
+                  padding: '4px 10px',
+                  color: on ? '#fff' : t.color,
+                  background: on ? t.color : 'transparent',
+                  border: `1px solid ${t.color}`,
+                  cursor: 'pointer',
+                }}
+              >
+                {t.label}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* View toggle */}
+        {view !== undefined && (
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{
+              fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+              color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
+            }}>View</span>
+            <div style={{ display: 'flex', border: `1px solid ${SITE.ink}` }}>
+              {(['list', 'calendar', 'map'] as const).map((v, i) => (
+                <div
+                  key={v}
+                  onClick={() => onViewChange?.(v)}
+                  style={{
+                    fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    padding: '6px 12px',
+                    background: v === view ? SITE.ink : '#fff',
+                    color: v === view ? SITE.limestone : SITE.ink,
+                    cursor: 'pointer',
+                    borderRight: i < 2 ? `1px solid ${SITE.ink}` : 'none',
+                  }}
+                >
+                  {v}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
