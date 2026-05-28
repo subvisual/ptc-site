@@ -1,4 +1,4 @@
-import { Community, EVENTS, SITE } from '@/lib/tokens';
+import { Community, EVENTS, SITE, communityColor } from '@/lib/tokens';
 import { StoneStripe } from '@/lib/stones';
 import { CommunityBadge } from './CommunityBadge';
 import { ThemeTag } from './ThemeTag';
@@ -22,13 +22,13 @@ export function CommunityCard({ comm, onClick }: CommunityCardProps) {
         cursor: onClick ? 'pointer' : 'default',
       }}
     >
-      {/* Calçada strip in community's accent color */}
+      {/* Calçada strip in community's theme color */}
       <div style={{
         display: 'flex', justifyContent: 'flex-start',
-        background: comm.accent + '15',
+        background: communityColor(comm) + '15',
         borderBottom: `1px solid ${SITE.rule}`,
       }}>
-        <StoneStripe width={420} rows={1} cellSize={6} color={comm.accent} light={'#fff'} seed={comm.id.length * 7} />
+        <StoneStripe width={420} rows={1} cellSize={6} color={communityColor(comm)} light={'#fff'} seed={comm.id.length * 7} />
       </div>
 
       <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>

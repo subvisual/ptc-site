@@ -7,22 +7,21 @@ import { CommunityCard } from '@/components/CommunityCard';
 
 interface HomeProps {
   onNavigate: (page: Page, communityId?: string) => void;
-  onOpenAbout?: () => void;
   onOpenSubmit?: () => void;
   onOpenAdmin?: () => void;
 }
 
-export function Home({ onNavigate, onOpenAbout, onOpenSubmit, onOpenAdmin }: HomeProps) {
+export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
   const featured = EVENTS.slice(0, 4);
   const featuredComms = ['react-lisbon', 'python-pt', 'coimbra-ml', 'devops-porto'].map(communityById);
 
   return (
     <div style={{ background: SITE.paper, minHeight: '100%', fontFamily: '"Space Grotesk", sans-serif' }}>
-      <NavBar active="home" onNavigate={onNavigate} onOpenAbout={onOpenAbout} onOpenSubmit={onOpenSubmit} />
+      <NavBar active="home" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
       {/* Hero */}
-      <div style={{
-        padding: '80px 48px 60px', position: 'relative',
+      <div className="page-pad" style={{
+        paddingTop: 80, paddingBottom: 60, position: 'relative',
         overflow: 'hidden', borderBottom: `1px solid ${SITE.rule}`,
       }}>
         <div style={{ position: 'absolute', right: -40, top: -40, opacity: 0.18, pointerEvents: 'none' }}>
@@ -34,108 +33,88 @@ export function Home({ onNavigate, onOpenAbout, onOpenSubmit, onOpenAdmin }: Hom
         </div>
         <div style={{ position: 'relative', maxWidth: 760 }}>
           <div style={{
-            fontFamily: '"JetBrains Mono", monospace', fontSize: 11, color: SITE.green,
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 11, color: SITE.mute,
             letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 18,
           }}>
             A community of communities
           </div>
-          <h1 style={{
-            fontWeight: 700, fontSize: 72, lineHeight: 0.95,
-            letterSpacing: '-0.03em', color: SITE.ink, margin: 0,
+          <h1 className="hero-h1" style={{
+            fontWeight: 700, letterSpacing: '-0.03em', color: SITE.ink, margin: 0,
           }}>
             Where Tech<br />Communities Gather.
           </h1>
           <div style={{
             fontSize: 18, color: SITE.inkSoft, marginTop: 22,
-            lineHeight: 1.5, maxWidth: 560,
+            lineHeight: 1.5, maxWidth: 560, textWrap: 'pretty' as React.CSSProperties['textWrap'],
           }}>
             A directory of meetups, talks, and gatherings happening across Portugal's tech communities. Curated by the organizers themselves.
           </div>
-          <div style={{ display: 'flex', gap: 12, marginTop: 30 }}>
-            <button
+        </div>
+      </div>
+
+      {/* Main content — This week + Communities side by side */}
+      <div className="home-cols" style={{ borderBottom: `1px solid ${SITE.rule}` }}>
+        {/* This week — left column */}
+        <div style={{ padding: '48px 48px 48px', borderRight: `1px solid ${SITE.rule}` }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <StoneStamp accent={SITE.green} size={10} />
+              <h2 style={{ fontWeight: 700, fontSize: 24, color: SITE.ink, letterSpacing: '-0.01em', margin: 0 }}>
+                This week
+              </h2>
+            </div>
+            <div
               onClick={() => onNavigate('events')}
               style={{
-                background: SITE.ink, color: SITE.limestone,
-                padding: '14px 22px', fontWeight: 600, fontSize: 14,
-                border: 'none', cursor: 'pointer',
-                fontFamily: '"Space Grotesk", sans-serif',
+                fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
+                color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
+                cursor: 'pointer',
               }}
             >
-              Browse events →
-            </button>
-            <button
+              All events →
+            </div>
+          </div>
+          <div style={{
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
+            color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
+            marginBottom: 20, paddingLeft: 48,
+          }}>
+            12 events · 8 cities · 9 communities
+          </div>
+          {featured.map(e => (
+            <EventRow
+              key={e.id}
+              event={e}
+              onCommunityClick={() => onNavigate('community-detail', e.commId)}
+            />
+          ))}
+        </div>
+
+        {/* Communities — right column */}
+        <div style={{ padding: '48px 48px 48px', background: SITE.paperWarm }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <StoneStamp accent={SITE.blue} size={10} />
+              <h2 style={{ fontWeight: 700, fontSize: 24, color: SITE.ink, letterSpacing: '-0.01em', margin: 0 }}>
+                Communities
+              </h2>
+            </div>
+            <div
               onClick={() => onNavigate('communities')}
               style={{
-                border: `1px solid ${SITE.ink}`, padding: '14px 22px',
-                fontWeight: 600, fontSize: 14, color: SITE.ink,
-                background: 'transparent', cursor: 'pointer',
-                fontFamily: '"Space Grotesk", sans-serif',
+                fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
+                color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
+                cursor: 'pointer',
               }}
             >
-              See communities
-            </button>
+              All 12 →
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Featured events */}
-      <div style={{ padding: '56px 48px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <StoneStamp accent={SITE.green} size={10} />
-            <h2 style={{ fontWeight: 700, fontSize: 28, color: SITE.ink, letterSpacing: '-0.01em', margin: 0 }}>
-              This week
-            </h2>
+          <div className="grid-2">
+            {featuredComms.map(c => (
+              <CommunityCard key={c.id} comm={c} onClick={() => onNavigate('community-detail', c.id)} />
+            ))}
           </div>
-          <div
-            onClick={() => onNavigate('events')}
-            style={{
-              fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-              color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
-              cursor: 'pointer',
-            }}
-          >
-            All events →
-          </div>
-        </div>
-        <div style={{
-          fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-          color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
-          marginBottom: 24, paddingLeft: 48,
-        }}>
-          12 events · 8 cities · 9 communities
-        </div>
-        {featured.map(e => <EventRow key={e.id} event={e} />)}
-      </div>
-
-      {/* Featured communities */}
-      <div style={{
-        padding: '56px 48px 64px',
-        background: SITE.paperWarm,
-        borderTop: `1px solid ${SITE.rule}`,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <StoneStamp accent={SITE.blue} size={10} />
-            <h2 style={{ fontWeight: 700, fontSize: 28, color: SITE.ink, letterSpacing: '-0.01em', margin: 0 }}>
-              Communities
-            </h2>
-          </div>
-          <div
-            onClick={() => onNavigate('communities')}
-            style={{
-              fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-              color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
-              cursor: 'pointer',
-            }}
-          >
-            All 12 communities →
-          </div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
-          {featuredComms.map(c => (
-            <CommunityCard key={c.id} comm={c} onClick={() => onNavigate('community-detail', c.id)} />
-          ))}
         </div>
       </div>
 

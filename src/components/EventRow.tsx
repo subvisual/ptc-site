@@ -4,15 +4,14 @@ import { ThemeTag } from './ThemeTag';
 
 interface EventRowProps {
   event: Event;
+  onCommunityClick?: () => void;
 }
 
-export function EventRow({ event }: EventRowProps) {
+export function EventRow({ event, onCommunityClick }: EventRowProps) {
   const comm = communityById(event.commId);
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: '80px 1fr auto',
-      gap: 24, alignItems: 'center',
+    <div className="event-row-grid" style={{
+      alignItems: 'start',
       padding: '20px 0',
       borderTop: `1px solid ${SITE.rule}`,
     }}>
@@ -41,13 +40,24 @@ export function EventRow({ event }: EventRowProps) {
       {/* Content */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <CommunityBadge comm={comm} size={20} />
-          <span style={{
-            fontFamily: '"Space Grotesk", sans-serif', fontWeight: 600,
-            fontSize: 13, color: SITE.ink,
-          }}>
-            {comm.name}
-          </span>
+          <div
+            onClick={onCommunityClick}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              cursor: onCommunityClick ? 'pointer' : 'default',
+            }}
+          >
+            <CommunityBadge comm={comm} size={20} />
+            <span style={{
+              fontFamily: '"Space Grotesk", sans-serif', fontWeight: 600,
+              fontSize: 13, color: SITE.ink,
+              textDecoration: onCommunityClick ? 'underline' : 'none',
+              textDecorationColor: SITE.rule,
+              textUnderlineOffset: 3,
+            }}>
+              {comm.name}
+            </span>
+          </div>
           <span style={{ color: SITE.rule }}>·</span>
           <span style={{
             fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
@@ -61,6 +71,12 @@ export function EventRow({ event }: EventRowProps) {
           color: SITE.ink, letterSpacing: '-0.01em', lineHeight: 1.2,
         }}>
           {event.title}
+        </div>
+        <div style={{
+          fontFamily: '"Space Grotesk", sans-serif', fontSize: 13,
+          color: SITE.inkSoft, lineHeight: 1.45, marginTop: 6,
+        }}>
+          {event.description}
         </div>
         <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
           {comm.themes.slice(0, 2).map(k => <ThemeTag key={k} themeKey={k} small />)}

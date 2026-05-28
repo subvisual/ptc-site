@@ -6,8 +6,7 @@ import { FilterBar } from '@/components/FilterBar';
 import { EventRow } from '@/components/EventRow';
 
 interface EventsProps {
-  onNavigate: (page: Page) => void;
-  onOpenAbout?: () => void;
+  onNavigate: (page: Page, communityId?: string) => void;
   onOpenSubmit?: () => void;
 }
 
@@ -38,9 +37,10 @@ function groupByWeek(events: typeof EVENTS) {
   return groups;
 }
 
-export function Events({ onNavigate, onOpenAbout, onOpenSubmit }: EventsProps) {
+export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [activeThemes, setActiveThemes] = useState<ThemeKey[]>([]);
+  const [view, setView] = useState<'list' | 'calendar' | 'map'>('list');
 
   function handleCityToggle(city: string) {
     if (city === '__all__') {
@@ -76,7 +76,6 @@ export function Events({ onNavigate, onOpenAbout, onOpenSubmit }: EventsProps) {
       <NavBar
         active="events"
         onNavigate={onNavigate}
-        onOpenAbout={onOpenAbout}
         onOpenSubmit={onOpenSubmit}
       />
 
@@ -95,13 +94,22 @@ export function Events({ onNavigate, onOpenAbout, onOpenSubmit }: EventsProps) {
       <FilterBar
         selectedCities={selectedCities}
         activeThemes={activeThemes}
-        view="list"
+        view={view}
         onCityToggle={handleCityToggle}
         onThemeToggle={handleThemeToggle}
+        onViewChange={setView}
       />
 
       <div style={{ padding: '0 48px 64px' }}>
-        {groups.length === 0 ? (
+        {view !== 'list' ? (
+          <div style={{
+            marginTop: 80, textAlign: 'center',
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 12,
+            color: SITE.mute, letterSpacing: '0.1em', textTransform: 'uppercase',
+          }}>
+            {view === 'calendar' ? 'Calendar view — coming soon' : 'Map view — coming soon'}
+          </div>
+        ) : groups.length === 0 ? (
           <div style={{
             marginTop: 64, textAlign: 'center',
             fontFamily: '"JetBrains Mono", monospace', fontSize: 12,
@@ -124,7 +132,13 @@ export function Events({ onNavigate, onOpenAbout, onOpenSubmit }: EventsProps) {
                 </span>
               </div>
               <div>
-                {g.events.map(e => <EventRow key={e.id} event={e} />)}
+                {g.events.map(e => (
+                  <EventRow
+                    key={e.id}
+                    event={e}
+                    onCommunityClick={() => onNavigate('community-detail', e.commId)}
+                  />
+                ))}
               </div>
             </div>
           ))

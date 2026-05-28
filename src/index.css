@@ -20,3 +20,167 @@ body {
 button {
   font-family: inherit;
 }
+
+/* ─── Responsive layout helpers ─────────────────────────────────────────── */
+
+.page-pad {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+/* Hero heading */
+.hero-h1 {
+  font-size: 72px;
+  line-height: 0.95;
+}
+
+/* Two-column home layout */
+.home-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Community grid */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Community cards in home (2x2) */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* NavBar links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* EventRow grid */
+.event-row-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 24px;
+}
+
+/* CommunityDetail header grid */
+.comm-header-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 32px;
+}
+
+/* Stats strip */
+.stats-strip {
+  display: flex;
+  gap: 64px;
+}
+
+@media (max-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .home-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .home-cols > *:first-child {
+    border-right: none !important;
+    border-bottom: 1px solid #d8d3c4;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stats-strip {
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-pad {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hero-h1 {
+    font-size: 48px;
+  }
+
+  .navbar-links {
+    gap: 16px;
+  }
+
+  .comm-header-grid {
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+  }
+
+  .comm-header-grid > *:last-child {
+    grid-column: 1 / -1;
+    flex-direction: row !important;
+  }
+
+  .stats-strip {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-h1 {
+    font-size: 36px;
+  }
+
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .event-row-grid {
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+  }
+
+  .event-row-grid > *:last-child {
+    grid-column: 2;
+  }
+
+  .navbar-links {
+    gap: 12px;
+  }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+
+/* Logo text — hide on very small screens, just show the mark */
+.navbar-logo-text {
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .page-pad {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .navbar-logo-text {
+    display: none;
+  }
+}

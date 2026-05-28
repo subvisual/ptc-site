@@ -4,8 +4,8 @@ import { Home } from '@/pages/Home';
 import { Events } from '@/pages/Events';
 import { Communities } from '@/pages/Communities';
 import { CommunityDetail } from '@/pages/CommunityDetail';
+import { About } from '@/pages/About';
 import { Admin } from '@/pages/Admin';
-import { AboutModal } from '@/components/AboutModal';
 import { SubmitModal } from '@/components/SubmitModal';
 import { useSiteConfig } from '@/lib/siteConfig';
 
@@ -16,7 +16,6 @@ interface AppState {
 
 export default function App() {
   const [state, setState] = useState<AppState>({ page: 'home' });
-  const [showAbout, setShowAbout] = useState(false);
   const [showSubmit, setShowSubmit] = useState(false);
   const { config } = useSiteConfig();
 
@@ -26,7 +25,6 @@ export default function App() {
   }
 
   const modalProps = {
-    onOpenAbout: () => setShowAbout(true),
     onOpenSubmit: () => setShowSubmit(true),
     onOpenAdmin: () => setState({ page: 'admin' }),
   };
@@ -41,6 +39,8 @@ export default function App() {
     content = <Communities onNavigate={navigate} {...modalProps} />;
   } else if (state.page === 'community-detail' && state.communityId) {
     content = <CommunityDetail communityId={state.communityId} onNavigate={navigate} {...modalProps} />;
+  } else if (state.page === 'about') {
+    content = <About onNavigate={navigate} {...modalProps} />;
   } else {
     content = <Home onNavigate={navigate} {...modalProps} />;
   }
@@ -48,9 +48,6 @@ export default function App() {
   return (
     <>
       {content}
-      {showAbout && (
-        <AboutModal config={config} onClose={() => setShowAbout(false)} />
-      )}
       {showSubmit && (
         <SubmitModal formUrl={config.notionFormUrl} onClose={() => setShowSubmit(false)} />
       )}

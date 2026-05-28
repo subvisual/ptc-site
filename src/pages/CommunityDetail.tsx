@@ -7,8 +7,7 @@ import { EventRow } from '@/components/EventRow';
 
 interface CommunityDetailProps {
   communityId: string;
-  onNavigate: (page: Page) => void;
-  onOpenAbout?: () => void;
+  onNavigate: (page: Page, communityId?: string) => void;
   onOpenSubmit?: () => void;
   onOpenAdmin?: () => void;
 }
@@ -33,14 +32,14 @@ function defaultPastEvents(communityName: string) {
   ];
 }
 
-export function CommunityDetail({ communityId, onNavigate, onOpenAbout, onOpenSubmit, onOpenAdmin }: CommunityDetailProps) {
+export function CommunityDetail({ communityId, onNavigate, onOpenSubmit, onOpenAdmin }: CommunityDetailProps) {
   const comm = communityById(communityId);
   const upcoming = EVENTS.filter(e => e.commId === comm.id);
   const past = PAST_EVENTS[comm.id] || defaultPastEvents(comm.name);
 
   return (
     <div style={{ background: SITE.paper, minHeight: '100%', fontFamily: '"Space Grotesk", sans-serif' }}>
-      <NavBar active="communities" onNavigate={onNavigate} onOpenAbout={onOpenAbout} onOpenSubmit={onOpenSubmit} />
+      <NavBar active="communities" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
       {/* Breadcrumb */}
       <div style={{
@@ -58,9 +57,9 @@ export function CommunityDetail({ communityId, onNavigate, onOpenAbout, onOpenSu
       </div>
 
       {/* Community header */}
-      <div style={{
-        padding: '48px 48px 40px', borderBottom: `1px solid ${SITE.rule}`,
-        display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: 32, alignItems: 'flex-start',
+      <div className="comm-header-grid page-pad" style={{
+        paddingTop: 48, paddingBottom: 40, borderBottom: `1px solid ${SITE.rule}`,
+        alignItems: 'flex-start',
       }}>
         <CommunityBadge comm={comm} size={96} />
         <div>
@@ -101,16 +100,38 @@ export function CommunityDetail({ communityId, onNavigate, onOpenAbout, onOpenSu
         </div>
       </div>
 
+      {/* Upcoming — highlighted above stats */}
+      <div style={{ padding: '48px 48px 32px' }}>
+        <h2 style={{ fontWeight: 700, fontSize: 28, color: SITE.ink, letterSpacing: '-0.01em', margin: 0, marginBottom: 4 }}>
+          Upcoming
+        </h2>
+        <div style={{
+          fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
+          color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16,
+        }}>
+          {upcoming.length} event{upcoming.length !== 1 ? 's' : ''}
+        </div>
+        {upcoming.length > 0
+          ? upcoming.map(e => <EventRow key={e.id} event={e} />)
+          : (
+            <div style={{ color: SITE.mute, fontFamily: '"JetBrains Mono", monospace', fontSize: 12, padding: '20px 0' }}>
+              No upcoming events scheduled
+            </div>
+          )}
+      </div>
+
       {/* Stats strip */}
-      <div style={{
-        padding: '24px 48px', borderBottom: `1px solid ${SITE.rule}`,
-        display: 'flex', gap: 64, background: SITE.paperWarm,
+      <div className="stats-strip page-pad" style={{
+        paddingTop: 24, paddingBottom: 24,
+        borderBottom: `1px solid ${SITE.rule}`,
+        background: SITE.paperWarm,
+        borderTop: `1px solid ${SITE.rule}`,
       }}>
         {[
           { label: 'Events organized', value: comm.orgCount },
           { label: 'Years active',     value: 2026 - comm.founded },
           { label: 'Avg. attendance',  value: '85' },
-          { label: 'Next event',       value: upcoming.length ? `${upcoming[0].when.mo} ${upcoming[0].when.day}` : '—' },
+          { label: 'Members',          value: comm.members },
         ].map(s => (
           <div key={s.label}>
             <div style={{
@@ -127,26 +148,6 @@ export function CommunityDetail({ communityId, onNavigate, onOpenAbout, onOpenSu
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Upcoming */}
-      <div style={{ padding: '48px 48px 24px' }}>
-        <h2 style={{ fontWeight: 700, fontSize: 24, color: SITE.ink, letterSpacing: '-0.01em', margin: 0, marginBottom: 4 }}>
-          Upcoming
-        </h2>
-        <div style={{
-          fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-          color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16,
-        }}>
-          {upcoming.length} event{upcoming.length !== 1 ? 's' : ''}
-        </div>
-        {upcoming.length > 0
-          ? upcoming.map(e => <EventRow key={e.id} event={e} />)
-          : (
-            <div style={{ color: SITE.mute, fontFamily: '"JetBrains Mono", monospace', fontSize: 12, padding: '20px 0' }}>
-              No upcoming events scheduled
-            </div>
-          )}
       </div>
 
       {/* Past events */}
