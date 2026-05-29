@@ -68,6 +68,16 @@ export function useSiteConfig() {
     saveConfig(config);
   }, [config]);
 
+  // Try to hydrate from the API (server may not be running in all envs)
+  useEffect(() => {
+    fetch('/api/config')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) setConfigState(prev => ({ ...prev, ...data }));
+      })
+      .catch(() => {});
+  }, []);
+
   function setConfig(update: Partial<SiteConfig>) {
     setConfigState(prev => ({ ...prev, ...update }));
   }

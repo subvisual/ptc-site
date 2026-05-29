@@ -4,14 +4,19 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
+    "dev": "concurrently -n api,vite -c cyan,green \"tsx --env-file=.env.local watch server/index.ts\" \"vite dev\"",
+    "dev:vite": "vite dev",
+    "dev:api": "tsx --env-file=.env.local watch server/index.ts",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@notionhq/client": "^5.22.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "2.1.1",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
     "lucide-react": "^0.545.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -19,11 +24,16 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.14",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^10.0.0",
+    "dotenv": "^17.4.2",
     "tailwindcss": "^4.1.14",
+    "tsx": "^4.22.3",
     "typescript": "^5.8.3",
     "vite": "^7.3.0"
   }

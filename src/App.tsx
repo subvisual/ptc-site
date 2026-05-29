@@ -15,12 +15,15 @@ interface AppState {
 }
 
 export default function App() {
-  const [state, setState] = useState<AppState>({ page: 'home' });
+  const [state, setState] = useState<AppState>(() => ({
+    page: window.location.hash === '#admin' ? 'admin' : 'home',
+  }));
   const [showSubmit, setShowSubmit] = useState(false);
   const { config } = useSiteConfig();
 
   function navigate(page: Page, communityId?: string) {
     setState({ page, communityId });
+    window.history.pushState(null, '', page === 'home' ? '/' : `#${page}`);
     window.scrollTo(0, 0);
   }
 
