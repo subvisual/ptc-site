@@ -1,4 +1,4 @@
-import { SITE, THEMES, ThemeKey, CITIES } from '@/lib/tokens';
+import { SITE, THEMES, ThemeKey, CITIES, T } from '@/lib/tokens';
 
 interface FilterBarProps {
   selectedCities?: string[];
@@ -22,13 +22,13 @@ export function FilterBar({
 
   return (
     <div style={{
-      padding: '20px 48px', borderBottom: `1px solid ${SITE.rule}`, background: SITE.paper,
+      padding: '20px 48px', borderBottom: `1px solid ${T.rule}`, background: T.paper,
     }}>
       {/* Cities */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
         <span style={{
           fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
-          color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase', minWidth: 40,
+          color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase', minWidth: 40,
         }}>City</span>
         <span
           onClick={() => onCityToggle?.('__all__')}
@@ -36,9 +36,9 @@ export function FilterBar({
             fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
             letterSpacing: '0.1em', textTransform: 'uppercase',
             padding: '4px 10px',
-            color: allCitiesSelected ? '#fff' : SITE.ink,
-            background: allCitiesSelected ? SITE.ink : 'transparent',
-            border: `1px solid ${SITE.ink}`,
+            color: allCitiesSelected ? T.limestone : T.ink,
+            background: allCitiesSelected ? T.ink : 'transparent',
+            border: `1px solid ${T.ink}`,
             cursor: 'pointer',
           }}
         >
@@ -54,9 +54,9 @@ export function FilterBar({
                 fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
                 padding: '4px 10px',
-                color: on ? '#fff' : SITE.inkSoft,
-                background: on ? SITE.ink : 'transparent',
-                border: `1px solid ${on ? SITE.ink : SITE.rule}`,
+                color: on ? T.limestone : T.inkSoft,
+                background: on ? T.ink : 'transparent',
+                border: `1px solid ${on ? T.ink : T.rule}`,
                 cursor: 'pointer',
               }}
             >
@@ -71,7 +71,7 @@ export function FilterBar({
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{
             fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
-            color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
           }}>Themes</span>
           {THEMES.map(t => {
             const on = activeThemes.includes(t.key as ThemeKey);
@@ -100,10 +100,10 @@ export function FilterBar({
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{
               fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
-              color: SITE.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
             }}>View</span>
-            <div style={{ display: 'flex', border: `1px solid ${SITE.ink}` }}>
-              {(['list', 'calendar', 'map'] as const).map((v, i) => (
+            <div style={{ display: 'flex', border: `1px solid ${T.ink}` }}>
+              {(['list', 'calendar'] as const).map((v, i) => (
                 <div
                   key={v}
                   onClick={() => onViewChange?.(v)}
@@ -111,10 +111,10 @@ export function FilterBar({
                     fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
                     letterSpacing: '0.12em', textTransform: 'uppercase',
                     padding: '6px 12px',
-                    background: v === view ? SITE.ink : '#fff',
-                    color: v === view ? SITE.limestone : SITE.ink,
+                    background: v === view ? T.ink : T.card,
+                    color: v === view ? T.limestone : T.ink,
                     cursor: 'pointer',
-                    borderRight: i < 2 ? `1px solid ${SITE.ink}` : 'none',
+                    borderRight: i < 2 ? `1px solid ${T.ink}` : 'none',
                   }}
                 >
                   {v}

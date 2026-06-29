@@ -1,9 +1,27 @@
-import { SITE, SITE_PALETTE, INVERSE_PALETTE_HOME, EVENTS, COMMUNITIES, communityById } from '@/lib/tokens';
+import { useState, useEffect } from 'react';
+import { SITE, SITE_PALETTE, INVERSE_PALETTE_HOME, COMMUNITIES, T, communityById } from '@/lib/tokens';
 import { StoneStamp, PaintedStones, makeFanPaint, makeWavePaint } from '@/lib/stones';
 import { NavBar, Page } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
-import { EventRow } from '@/components/EventRow';
+import { EventRow, DisplayEvent } from '@/components/EventRow';
 import { CommunityCard } from '@/components/CommunityCard';
+import { api, ApiEvent, ApiCommunity } from '@/lib/api';
+
+function toDisplayEvent(e: ApiEvent, communityMap: Map<string, ApiCommunity>): DisplayEvent {
+  const comm = communityMap.get(e.communityIds[0]);
+  return {
+    id: e.id,
+    name: e.name,
+    description: e.description,
+    venue: e.venue,
+    region: e.region,
+    date: e.date,
+    topics: e.topics,
+    eventUrl: e.eventUrl,
+    communityName: comm?.name ?? '',
+    communitySlug: comm?.slug,
+  };
+}
 
 interface HomeProps {
   onNavigate: (page: Page, communityId?: string) => void;
@@ -12,17 +30,26 @@ interface HomeProps {
 }
 
 export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
-  const featured = EVENTS.slice(0, 4);
+  const [featured, setFeatured] = useState<DisplayEvent[]>([]);
   const featuredComms = ['react-lisbon', 'python-pt', 'coimbra-ml', 'devops-porto'].map(communityById);
 
+  useEffect(() => {
+    Promise.all([api.getEvents(), api.getCommunities()])
+      .then(([evts, comms]) => {
+        const communityMap = new Map(comms.map(c => [c.notionId, c]));
+        setFeatured(evts.slice(0, 4).map(e => toDisplayEvent(e, communityMap)));
+      })
+      .catch(() => {});
+  }, []);
+
   return (
-    <div style={{ background: SITE.paper, minHeight: '100%', fontFamily: '"Space Grotesk", sans-serif' }}>
+    <div style={{ background: T.paper, minHeight: '100vh', fontFamily: '"Space Grotesk", sans-serif' }}>
       <NavBar active="home" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
       {/* Hero */}
       <div className="page-pad" style={{
         paddingTop: 80, paddingBottom: 60, position: 'relative',
-        overflow: 'hidden', borderBottom: `1px solid ${SITE.rule}`,
+        overflow: 'hidden', borderBottom: `1px solid ${T.rule}`,
       }}>
         <div style={{ position: 'absolute', right: -40, top: -40, opacity: 0.18, pointerEvents: 'none' }}>
           <PaintedStones
@@ -33,33 +60,33 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
         </div>
         <div style={{ position: 'relative', maxWidth: 760 }}>
           <div style={{
-            fontFamily: '"JetBrains Mono", monospace', fontSize: 11, color: SITE.mute,
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 11, color: T.mute,
             letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 18,
           }}>
             A community of communities
           </div>
           <h1 className="hero-h1" style={{
-            fontWeight: 700, letterSpacing: '-0.03em', color: SITE.ink, margin: 0,
+            fontWeight: 700, letterSpacing: '-0.03em', color: T.ink, margin: 0,
           }}>
             Where Tech<br />Communities Gather.
           </h1>
           <div style={{
-            fontSize: 18, color: SITE.inkSoft, marginTop: 22,
+            fontSize: 18, color: T.inkSoft, marginTop: 22,
             lineHeight: 1.5, maxWidth: 560, textWrap: 'pretty' as React.CSSProperties['textWrap'],
           }}>
-            A directory of meetups, talks, and gatherings happening across Portugal's tech communities. Curated by the organizers themselves.
+            A curated directory of in-person meetups, talks and gatherings happening in Portugal's tech communities.
           </div>
         </div>
       </div>
 
       {/* Main content — This week + Communities side by side */}
-      <div className="home-cols" style={{ borderBottom: `1px solid ${SITE.rule}` }}>
+      <div className="home-cols" style={{ borderBottom: `1px solid ${T.rule}` }}>
         {/* This week — left column */}
-        <div style={{ padding: '48px 48px 48px', borderRight: `1px solid ${SITE.rule}` }}>
+        <div style={{ padding: '48px 48px 48px', borderRight: `1px solid ${T.rule}` }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <StoneStamp accent={SITE.green} size={10} />
-              <h2 style={{ fontWeight: 700, fontSize: 24, color: SITE.ink, letterSpacing: '-0.01em', margin: 0 }}>
+              <h2 style={{ fontWeight: 700, fontSize: 24, color: T.ink, letterSpacing: '-0.01em', margin: 0 }}>
                 This week
               </h2>
             </div>
@@ -67,7 +94,7 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
               onClick={() => onNavigate('events')}
               style={{
                 fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-                color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
+                color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
                 cursor: 'pointer',
               }}
             >
@@ -76,7 +103,7 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
           </div>
           <div style={{
             fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-            color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
+            color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 20, paddingLeft: 48,
           }}>
             12 events · 8 cities · 9 communities
@@ -85,17 +112,19 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
             <EventRow
               key={e.id}
               event={e}
-              onCommunityClick={() => onNavigate('community-detail', e.commId)}
+              onCommunityClick={e.communitySlug
+                ? () => onNavigate('community-detail', e.communitySlug)
+                : undefined}
             />
           ))}
         </div>
 
         {/* Communities — right column */}
-        <div style={{ padding: '48px 48px 48px', background: SITE.paperWarm }}>
+        <div style={{ padding: '48px 48px 48px', background: T.paperWarm }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <StoneStamp accent={SITE.blue} size={10} />
-              <h2 style={{ fontWeight: 700, fontSize: 24, color: SITE.ink, letterSpacing: '-0.01em', margin: 0 }}>
+              <h2 style={{ fontWeight: 700, fontSize: 24, color: T.ink, letterSpacing: '-0.01em', margin: 0 }}>
                 Communities
               </h2>
             </div>
@@ -103,7 +132,7 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
               onClick={() => onNavigate('communities')}
               style={{
                 fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-                color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
+                color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
                 cursor: 'pointer',
               }}
             >
@@ -121,7 +150,7 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
       {/* CTA — submit */}
       <div style={{
         padding: '64px 48px',
-        background: SITE.ink, color: SITE.limestone,
+        background: T.ink, color: T.limestone,
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         gap: 32, position: 'relative', overflow: 'hidden',
       }}>
@@ -150,7 +179,7 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
         <button
           onClick={onOpenSubmit}
           style={{
-            background: SITE.limestone, color: SITE.ink,
+            background: T.limestone, color: T.ink,
             padding: '16px 24px', fontWeight: 600, fontSize: 14,
             flexShrink: 0, position: 'relative', border: 'none', cursor: 'pointer',
             fontFamily: '"Space Grotesk", sans-serif',
