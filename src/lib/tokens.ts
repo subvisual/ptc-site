@@ -1,3 +1,24 @@
+// CSS-variable-backed theme tokens — use these in inline styles for dark mode support.
+// T mirrors SITE semantics but resolves at runtime via CSS custom properties.
+export const T = {
+  paper:     'var(--bg-page)',
+  paperWarm: 'var(--bg-surface)',
+  paperDeep: 'var(--bg-deep)',
+  ink:       'var(--fg)',
+  inkSoft:   'var(--fg-soft)',
+  mute:      'var(--fg-mute)',
+  rule:      'var(--border)',
+  card:      'var(--bg-card)',
+  limestone: 'var(--fg-inverse)',
+  // Accents are mode-invariant — same as SITE
+  green:  '#1F8A5B',
+  blue:   '#2A6FDB',
+  red:    '#C8412A',
+  ochre:  '#D69A2F',
+  purple: '#7C5BC4',
+  teal:   '#1f8a8a',
+} as const;
+
 // Brand color tokens
 export const SITE = {
   paper:     '#f4f1e8',
@@ -93,19 +114,20 @@ export interface Event {
   when: ReturnType<typeof dt>;
   city: string;
   venue: string;
+  url: string;
 }
 
 export const EVENTS: Event[] = [
-  { id: 'e01', commId: 'react-lisbon',    title: 'State of React Server Components',          description: 'A deep-dive into RSCs in production — when they help, when they hurt, and what teams have learned shipping them at scale.',              when: dt(11, 6, 2026, 19, 30), city: 'Lisboa',  venue: 'LX Factory · Sala B' },
-  { id: 'e02', commId: 'devops-porto',    title: 'Platform engineering at a 200-person co.',  description: 'How a mid-size company built an internal developer platform — tooling choices, team structure, and what they\'d do differently.',         when: dt(12, 6, 2026, 18, 30), city: 'Porto',   venue: 'UPTEC · Auditório' },
-  { id: 'e03', commId: 'coimbra-ml',      title: 'Embeddings, in practice',                   description: 'Beyond theory: how to choose, train, and evaluate embeddings for real-world search and retrieval tasks.',                                 when: dt(13, 6, 2026, 10, 30), city: 'Coimbra', venue: 'DEI · Anfiteatro 1' },
-  { id: 'e04', commId: 'sw-crafters',     title: 'Mob programming — bring a laptop',          description: 'A hands-on mob programming session — the whole group codes together on one problem. All levels welcome.',                                 when: dt(15, 6, 2026, 19, 0),  city: 'Lisboa',  venue: 'Beato Innovation District' },
-  { id: 'e05', commId: 'python-pt',       title: 'PyConPT 2026 · Call for Speakers closes',   description: 'Deadline to submit your talk proposal for PyConPT 2026. If you\'ve been sitting on an idea, tonight\'s your last chance.',               when: dt(16, 6, 2026, 23, 59), city: 'Online',  venue: 'Online' },
-  { id: 'e06', commId: 'porto-js',        title: 'Edge runtimes & the new web stack',         description: 'What running JS at the edge actually means in 2026 — Deno Deploy, Cloudflare Workers, Bun, and where each one shines.',                  when: dt(18, 6, 2026, 19, 30), city: 'Porto',   venue: 'Porto i/o · Vitoria' },
-  { id: 'e07', commId: 'cybersec-lx',     title: 'Threat modeling for product teams',         description: 'Practical threat modeling without the jargon — a framework any product team can adopt, with real case studies.',                          when: dt(19, 6, 2026, 18, 30), city: 'Lisboa',  venue: 'Hub Criativo do Beato' },
-  { id: 'e08', commId: 'braga-it',        title: 'Career night — recruiter Q&A',              description: 'Open Q&A with recruiters from three northern Portugal tech companies. Bring your questions and your CV.',                                 when: dt(20, 6, 2026, 19, 0),  city: 'Braga',   venue: 'U.Minho · CP1' },
-  { id: 'e09', commId: 'mobile-pt',       title: 'Building offline-first mobile apps',        description: 'Architecture patterns and storage strategies for apps that work seamlessly without connectivity — from sync design to conflict resolution.', when: dt(23, 6, 2026, 19, 0),  city: 'Porto',   venue: 'Porto Tech Hub' },
-  { id: 'e10', commId: 'aveiro-talks',    title: 'Open mic — lightning talks',                description: 'Five-minute lightning talks on anything tech. Sign up at the door — first come, first served. No slides required.',                       when: dt(24, 6, 2026, 19, 0),  city: 'Aveiro',  venue: 'Glicínias · Sala 2' },
-  { id: 'e11', commId: 'design-engineers',title: 'Designing developer tools',                 description: 'How do you design for an audience that\'s also building the tools? Lessons from teams shipping CLIs, IDE plugins, and dashboards.',        when: dt(26, 6, 2026, 19, 0),  city: 'Lisboa',  venue: 'Second Home' },
-  { id: 'e12', commId: 'algarve-hackers', title: 'Build night — soldering & breadboards',     description: 'Bring a project or start one from scratch. Soldering irons, components, and multimeters provided. No experience needed.',                 when: dt(28, 6, 2026, 14, 0),  city: 'Faro',    venue: 'Casa do Povo' },
+  { id: 'e01', commId: 'react-lisbon',    title: 'State of React Server Components',          description: 'A deep-dive into RSCs in production — when they help, when they hurt, and what teams have learned shipping them at scale.',              when: dt(11, 6, 2026, 19, 30), city: 'Lisboa',  venue: 'LX Factory · Sala B',             url: 'https://lu.ma' },
+  { id: 'e02', commId: 'devops-porto',    title: 'Platform engineering at a 200-person co.',  description: 'How a mid-size company built an internal developer platform — tooling choices, team structure, and what they\'d do differently.',         when: dt(12, 6, 2026, 18, 30), city: 'Porto',   venue: 'UPTEC · Auditório',               url: 'https://lu.ma' },
+  { id: 'e03', commId: 'coimbra-ml',      title: 'Embeddings, in practice',                   description: 'Beyond theory: how to choose, train, and evaluate embeddings for real-world search and retrieval tasks.',                                 when: dt(13, 6, 2026, 10, 30), city: 'Coimbra', venue: 'DEI · Anfiteatro 1',              url: 'https://lu.ma' },
+  { id: 'e04', commId: 'sw-crafters',     title: 'Mob programming — bring a laptop',          description: 'A hands-on mob programming session — the whole group codes together on one problem. All levels welcome.',                                 when: dt(15, 6, 2026, 19, 0),  city: 'Lisboa',  venue: 'Beato Innovation District',       url: 'https://lu.ma' },
+  { id: 'e05', commId: 'python-pt',       title: 'PyConPT 2026 · Call for Speakers closes',   description: 'Deadline to submit your talk proposal for PyConPT 2026. If you\'ve been sitting on an idea, tonight\'s your last chance.',               when: dt(16, 6, 2026, 23, 59), city: 'Online',  venue: 'Online',                          url: 'https://lu.ma' },
+  { id: 'e06', commId: 'porto-js',        title: 'Edge runtimes & the new web stack',         description: 'What running JS at the edge actually means in 2026 — Deno Deploy, Cloudflare Workers, Bun, and where each one shines.',                  when: dt(18, 6, 2026, 19, 30), city: 'Porto',   venue: 'Porto i/o · Vitoria',             url: 'https://lu.ma' },
+  { id: 'e07', commId: 'cybersec-lx',     title: 'Threat modeling for product teams',         description: 'Practical threat modeling without the jargon — a framework any product team can adopt, with real case studies.',                          when: dt(19, 6, 2026, 18, 30), city: 'Lisboa',  venue: 'Hub Criativo do Beato',           url: 'https://lu.ma' },
+  { id: 'e08', commId: 'braga-it',        title: 'Career night — recruiter Q&A',              description: 'Open Q&A with recruiters from three northern Portugal tech companies. Bring your questions and your CV.',                                 when: dt(20, 6, 2026, 19, 0),  city: 'Braga',   venue: 'U.Minho · CP1',                   url: 'https://lu.ma' },
+  { id: 'e09', commId: 'mobile-pt',       title: 'Building offline-first mobile apps',        description: 'Architecture patterns and storage strategies for apps that work seamlessly without connectivity — from sync design to conflict resolution.', when: dt(23, 6, 2026, 19, 0),  city: 'Porto',   venue: 'Porto Tech Hub',                  url: 'https://lu.ma' },
+  { id: 'e10', commId: 'aveiro-talks',    title: 'Open mic — lightning talks',                description: 'Five-minute lightning talks on anything tech. Sign up at the door — first come, first served. No slides required.',                       when: dt(24, 6, 2026, 19, 0),  city: 'Aveiro',  venue: 'Glicínias · Sala 2',              url: 'https://lu.ma' },
+  { id: 'e11', commId: 'design-engineers',title: 'Designing developer tools',                 description: 'How do you design for an audience that\'s also building the tools? Lessons from teams shipping CLIs, IDE plugins, and dashboards.',        when: dt(26, 6, 2026, 19, 0),  city: 'Lisboa',  venue: 'Second Home',                     url: 'https://lu.ma' },
+  { id: 'e12', commId: 'algarve-hackers', title: 'Build night — soldering & breadboards',     description: 'Bring a project or start one from scratch. Soldering irons, components, and multimeters provided. No experience needed.',                 when: dt(28, 6, 2026, 14, 0),  city: 'Faro',    venue: 'Casa do Povo',                    url: 'https://lu.ma' },
 ];

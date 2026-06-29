@@ -8,11 +8,11 @@ export const configRouter = Router();
 const CONFIG_PATH = join(process.cwd(), 'data', 'site-config.json');
 
 const DEFAULT_CONFIG = {
-  aboutText: 'Portuguese Tech Communities (PTC) é um diretório de meetups, talks e eventos de tecnologia por todo Portugal. Curado pelos próprios organizadores das comunidades.',
+  aboutText: 'Portuguese Tech Communities (PTC) is a directory of meetups, talks, and tech events happening across Portugal. Curated by the organizers themselves.',
   faqs: [
-    { q: 'Como posso adicionar a minha comunidade?', a: 'Clica em "Submit yours" e preenche o formulário. A equipa do PTC irá rever e publicar brevemente.' },
-    { q: 'O PTC é gratuito?', a: 'Sim, o diretório é completamente gratuito tanto para organizadores como para participantes.' },
-    { q: 'Com que frequência são atualizados os eventos?', a: 'Os eventos são atualizados continuamente pelos organizadores das respetivas comunidades.' },
+    { q: 'How can I add my community?', a: 'Click "Submit yours" and fill in the form. The PTC team will review and publish it shortly.' },
+    { q: 'Is PTC free?', a: 'Yes, the directory is completely free for both organizers and participants.' },
+    { q: 'How often are events updated?', a: 'Events are updated continuously by the organizers of each community.' },
   ],
   notionFormUrl: '',
   contactFormUrl: '',

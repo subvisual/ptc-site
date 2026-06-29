@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { SITE, COMMUNITIES, ThemeKey } from '@/lib/tokens';
+import { T, COMMUNITIES, ThemeKey } from '@/lib/tokens';
 import { NavBar, Page } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
 import { FilterBar } from '@/components/FilterBar';
@@ -37,18 +37,18 @@ export function Communities({ onNavigate, onOpenSubmit, onOpenAdmin }: Communiti
   }, [selectedCities, activeThemes]);
 
   return (
-    <div style={{ background: SITE.paper, minHeight: '100%', fontFamily: '"Space Grotesk", sans-serif' }}>
+    <div style={{ background: T.paper, minHeight: '100vh', fontFamily: '"Space Grotesk", sans-serif' }}>
       <NavBar active="communities" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
       {/* Page header */}
       <div style={{ padding: '40px 48px 24px' }}>
         <div style={{
           fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
-          color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8,
+          color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8,
         }}>
           Directory · {filtered.length} communit{filtered.length !== 1 ? 'ies' : 'y'}
         </div>
-        <h1 style={{ fontWeight: 700, fontSize: 42, letterSpacing: '-0.02em', color: SITE.ink, margin: 0 }}>
+        <h1 style={{ fontWeight: 700, fontSize: 42, letterSpacing: '-0.02em', color: T.ink, margin: 0 }}>
           The communities
         </h1>
       </div>
@@ -65,7 +65,7 @@ export function Communities({ onNavigate, onOpenSubmit, onOpenAdmin }: Communiti
           <div style={{
             marginTop: 40, textAlign: 'center',
             fontFamily: '"JetBrains Mono", monospace', fontSize: 12,
-            color: SITE.mute, letterSpacing: '0.1em', textTransform: 'uppercase',
+            color: T.mute, letterSpacing: '0.1em', textTransform: 'uppercase',
           }}>
             No communities match your filters
           </div>

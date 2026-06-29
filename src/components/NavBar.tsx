@@ -1,4 +1,4 @@
-import { SITE, SITE_PALETTE } from '@/lib/tokens';
+import { SITE_PALETTE, T } from '@/lib/tokens';
 import { CleanCells } from '@/lib/stones';
 import { ptcBubbleCells } from '@/lib/marks';
 
@@ -23,8 +23,8 @@ export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '20px 48px', borderBottom: `1px solid ${SITE.rule}`,
-      background: SITE.paper,
+      padding: '20px 48px', borderBottom: `1px solid ${T.rule}`,
+      background: T.paper,
     }}>
       <button
         onClick={() => onNavigate('home')}
@@ -36,7 +36,7 @@ export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
         <CleanCells cells={MARK_CELLS} size={1.4} palette={SITE_PALETTE} shape="square" />
         <div className="navbar-logo-text" style={{
           fontFamily: '"Space Grotesk", sans-serif', fontWeight: 700,
-          fontSize: 16, color: SITE.ink, lineHeight: 1, letterSpacing: '-0.01em',
+          fontSize: 16, color: T.ink, lineHeight: 1, letterSpacing: '-0.01em',
         }}>
           Portuguese Tech Communities
         </div>
@@ -57,7 +57,7 @@ export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
                 style={{
                   fontFamily: '"Space Grotesk", sans-serif',
                   fontSize: 13, fontWeight: 600,
-                  background: SITE.ink, color: SITE.limestone,
+                  background: T.ink, color: T.limestone,
                   padding: '8px 16px',
                   cursor: 'pointer',
                 }}
@@ -73,8 +73,8 @@ export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
               style={{
                 fontFamily: '"Space Grotesk", sans-serif',
                 fontSize: 14, fontWeight: isActive ? 600 : 500,
-                color: isActive ? SITE.ink : SITE.mute,
-                borderBottom: isActive ? `2px solid ${SITE.ink}` : '2px solid transparent',
+                color: isActive ? T.ink : T.mute,
+                borderBottom: isActive ? `2px solid ${T.ink}` : '2px solid transparent',
                 paddingBottom: 4,
                 cursor: 'pointer',
               }}

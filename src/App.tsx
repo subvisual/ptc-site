@@ -6,8 +6,8 @@ import { Communities } from '@/pages/Communities';
 import { CommunityDetail } from '@/pages/CommunityDetail';
 import { About } from '@/pages/About';
 import { Admin } from '@/pages/Admin';
+import { Portal } from '@/pages/Portal';
 import { SubmitModal } from '@/components/SubmitModal';
-import { useSiteConfig } from '@/lib/siteConfig';
 
 interface AppState {
   page: Page | 'admin';
@@ -15,11 +15,15 @@ interface AppState {
 }
 
 export default function App() {
+  const hash = window.location.hash;
+  if (hash === '#portal' || hash === '#portal-expired') {
+    return <Portal />;
+  }
+
   const [state, setState] = useState<AppState>(() => ({
-    page: window.location.hash === '#admin' ? 'admin' : 'home',
+    page: hash === '#admin' ? 'admin' : 'home',
   }));
   const [showSubmit, setShowSubmit] = useState(false);
-  const { config } = useSiteConfig();
 
   function navigate(page: Page, communityId?: string) {
     setState({ page, communityId });
@@ -27,8 +31,12 @@ export default function App() {
     window.scrollTo(0, 0);
   }
 
+  function handleOpenSubmit() {
+    setShowSubmit(true);
+  }
+
   const modalProps = {
-    onOpenSubmit: () => setShowSubmit(true),
+    onOpenSubmit: handleOpenSubmit,
     onOpenAdmin: () => setState({ page: 'admin' }),
   };
 
@@ -52,7 +60,7 @@ export default function App() {
     <>
       {content}
       {showSubmit && (
-        <SubmitModal formUrl={config.notionFormUrl} onClose={() => setShowSubmit(false)} />
+        <SubmitModal onClose={() => setShowSubmit(false)} />
       )}
     </>
   );

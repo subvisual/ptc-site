@@ -8,6 +8,7 @@ export interface FAQ {
 export interface SiteConfig {
   adminPassword: string;
   notionFormUrl: string;
+  notionFormEmbed: boolean;
   contactFormUrl: string;
   newsletterUrl: string;
   whatsappUrl: string;
@@ -22,6 +23,7 @@ export interface SiteConfig {
 export const DEFAULT_CONFIG: SiteConfig = {
   adminPassword: 'ptcadmin',
   notionFormUrl: '',
+  notionFormEmbed: false,
   contactFormUrl: '',
   newsletterUrl: '',
   whatsappUrl: '',

@@ -52,9 +52,13 @@ authRouter.get('/session', (req, res) => {
   res.json({ authenticated: !!token && verifyToken(token) });
 });
 
-export function requireAuth(req: any, res: any, next: any) {
+export function verifyAdminSession(req: any): boolean {
   const token = req.cookies?.[COOKIE];
-  if (!token || !verifyToken(token)) {
+  return !!token && verifyToken(token);
+}
+
+export function requireAuth(req: any, res: any, next: any) {
+  if (!verifyAdminSession(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
   next();

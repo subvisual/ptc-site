@@ -4,15 +4,15 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n api,vite -c cyan,green \"tsx --env-file=.env.local watch server/index.ts\" \"vite dev\"",
+    "dev": "concurrently -n api,vite -c cyan,green \"tsx watch server/index.ts\" \"vite dev\"",
     "dev:vite": "vite dev",
-    "dev:api": "tsx --env-file=.env.local watch server/index.ts",
+    "dev:api": "tsx watch server/index.ts",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@notionhq/client": "^5.22.0",
+    "@notionhq/client": "^2.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "2.1.1",
     "cookie-parser": "^1.4.7",
@@ -20,6 +20,7 @@
     "lucide-react": "^0.545.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "resend": "^6.12.4",
     "tailwind-merge": "3.5.0"
   },
   "devDependencies": {

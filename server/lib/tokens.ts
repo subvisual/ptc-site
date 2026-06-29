@@ -1,0 +1,33 @@
+import { randomBytes } from 'crypto';
+
+interface TokenData {
+  communityIds: string[];
+  email: string;
+  exp: number;
+}
+
+const store = new Map<string, TokenData>();
+const TTL_MS = 24 * 60 * 60 * 1000;
+
+function slugInitials(slug: string): string {
+  return slug.split('-').map(w => w[0] ?? '').join('').slice(0, 4);
+}
+
+export function createMagicToken(communityIds: string[], email: string, firstSlug: string): string {
+  const prefix = slugInitials(firstSlug);
+  const rand = randomBytes(10).toString('hex');
+  const token = `${prefix}-${rand}`;
+  store.set(token, { communityIds, email, exp: Date.now() + TTL_MS });
+  return token;
+}
+
+export function consumeToken(token: string): TokenData | null {
+  const data = store.get(token);
+  if (!data) return null;
+  if (Date.now() > data.exp) {
+    store.delete(token);
+    return null;
+  }
+  store.delete(token);
+  return data;
+}

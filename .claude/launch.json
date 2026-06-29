@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "ptc-dev",
-      "runtimeExecutable": "pnpm",
+      "runtimeExecutable": "/Users/paulo/.local/share/pnpm/pnpm",
       "runtimeArgs": ["dev"],
       "port": 5173
     }

@@ -1,12 +1,22 @@
 import { Client } from '@notionhq/client';
 
-export const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-  timeoutMs: 8000,
-});
+export const EVENTS_DB = () => process.env.NOTION_EVENTS_DB ?? '358caae5-8631-8077-ac36-f6d4b806f6e5';
+export const COMMUNITIES_DB = () => process.env.NOTION_COMMUNITIES_DB ?? '358caae5-8631-80b0-af88-d19d858259f5';
+export const COMMUNITY_LEADERS_DB = '358caae5-8631-8080-8831-eba40cc28ca1';
 
-export const EVENTS_DB = process.env.NOTION_EVENTS_DB ?? '358caae5-8631-8009-a521-000bba763510';
-export const COMMUNITIES_DB = process.env.NOTION_COMMUNITIES_DB ?? '358caae5-8631-8006-8b92-000b7084f601';
+let _client: Client | null = null;
+function getClient(): Client {
+  if (!_client) {
+    _client = new Client({ auth: process.env.NOTION_TOKEN, timeoutMs: 8000 });
+  }
+  return _client;
+}
+
+export const notion: Client = new Proxy({} as Client, {
+  get(_target, prop) {
+    return (getClient() as any)[prop];
+  },
+});
 
 export interface NotionCommunity {
   id: string;
@@ -113,14 +123,28 @@ export function parseEvent(page: any): NotionEvent {
   };
 }
 
+export async function getLeaderByEmail(email: string): Promise<{ communityIds: string[] } | null> {
+  const res = await notion.databases.query({
+    database_id: COMMUNITY_LEADERS_DB,
+    filter: { property: 'mail', email: { equals: email } },
+  });
+  if (!res.results.length) return null;
+  const communityIds = relationIds((res.results[0] as any).properties['Community that leads']);
+  return { communityIds };
+}
+
+export async function getCommunitiesByIds(ids: string[]): Promise<NotionCommunity[]> {
+  const pages = await Promise.all(ids.map(id => notion.pages.retrieve({ page_id: id })));
+  return pages.map(parseCommunity);
+}
+
 export async function getCommunities(includeUnapproved = false) {
-  const filter: any = includeUnapproved ? undefined : {
-    property: 'Approved',
-    checkbox: { equals: true },
-  };
-  const res = await (notion as any).dataSources.query({
-    data_source_id: COMMUNITIES_DB,
-    filter,
+  const res = await notion.databases.query({
+    database_id: COMMUNITIES_DB(),
+    filter: includeUnapproved ? undefined : {
+      property: 'Approved',
+      checkbox: { equals: true },
+    },
     sorts: [{ property: 'Name', direction: 'ascending' }],
   });
   return res.results.map(parseCommunity);
@@ -133,8 +157,8 @@ export async function getEvents(includeUnapproved = false, includePast = false) 
     filters.push({ property: 'Date', date: { on_or_after: new Date().toISOString().split('T')[0] } });
   }
   const filter = filters.length > 1 ? { and: filters } : filters[0];
-  const res = await (notion as any).dataSources.query({
-    data_source_id: EVENTS_DB,
+  const res = await notion.databases.query({
+    database_id: EVENTS_DB(),
     filter,
     sorts: [{ property: 'Date', direction: 'ascending' }],
   });

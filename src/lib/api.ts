@@ -57,6 +57,21 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }),
+  submitCommunity: (data: {
+    name: string; description?: string; communityPage?: string;
+    region?: string; topics?: string[]; founded?: number;
+  }) =>
+    apiFetch<{ ok: boolean; id: string }>('/api/communities/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
+  submitLeader: (data: { name: string; email: string; role?: string; communityId: string }) =>
+    apiFetch<{ ok: boolean }>('/api/communities/submit-leader', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }),
   deleteCommunity: (id: string) =>
     apiFetch(`/api/communities/${id}`, { method: 'DELETE' }),
 
@@ -94,6 +109,17 @@ export const api = {
     }),
   logout: () => apiFetch('/api/auth/logout', { method: 'POST' }),
   session: () => apiFetch<{ authenticated: boolean }>('/api/auth/session'),
+
+  // Portal (community dashboard)
+  portalSession: () =>
+    apiFetch<{ authenticated: boolean; communityIds?: string[]; email?: string }>('/api/portal/session'),
+  portalLogout: () => apiFetch('/api/portal/logout', { method: 'POST' }),
+  sendMagicLink: (email: string) =>
+    apiFetch<{ ok: boolean; communities: string[] }>('/api/portal/magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }),
 
   // Config
   getConfig: () => apiFetch<Record<string, any>>('/api/config'),

@@ -1,8 +1,14 @@
 import { Router } from 'express';
 import { notion, EVENTS_DB, getEvents, parseEvent } from '../notion.js';
-import { requireAuth } from './auth.js';
+import { requireAuth, verifyAdminSession } from './auth.js';
+import { getPortalSession } from './portal.js';
 
 export const eventsRouter = Router();
+
+function requireAdminOrPortal(req: any, res: any, next: any) {
+  if (verifyAdminSession(req) || getPortalSession(req)) return next();
+  res.status(401).json({ error: 'Não autorizado.' });
+}
 
 eventsRouter.get('/', async (req, res) => {
   try {
@@ -24,11 +30,21 @@ eventsRouter.get('/:id', async (req, res) => {
   }
 });
 
-eventsRouter.put('/:id', requireAuth, async (req, res) => {
+eventsRouter.put('/:id', requireAdminOrPortal, async (req, res) => {
   try {
     const body = req.body as Record<string, any>;
-    const props: Record<string, any> = {};
+    const portalSession = getPortalSession(req);
 
+    if (portalSession) {
+      const existing = await notion.pages.retrieve({ page_id: req.params.id }) as any;
+      const existingEvent = parseEvent(existing);
+      const owns = existingEvent.communityIds.some((id: string) => portalSession.communityIds.includes(id));
+      if (!owns) return res.status(403).json({ error: 'Sem permissão para editar este evento.' });
+      delete body.approved;
+      delete body.communityIds;
+    }
+
+    const props: Record<string, any> = {};
     if (body.name !== undefined) props['Name'] = { title: [{ text: { content: body.name } }] };
     if (body.description !== undefined) props['Description'] = { rich_text: [{ text: { content: body.description } }] };
     if (body.venue !== undefined) props['Venue'] = { rich_text: [{ text: { content: body.venue } }] };
@@ -48,11 +64,17 @@ eventsRouter.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
-eventsRouter.post('/', requireAuth, async (req, res) => {
+eventsRouter.post('/', requireAdminOrPortal, async (req, res) => {
   try {
     const body = req.body as Record<string, any>;
+    const portalSession = getPortalSession(req);
+
+    // community auth: force communityIds and always pending approval
+    const communityIds = portalSession ? portalSession.communityIds : (body.communityIds ?? []);
+    const approved = portalSession ? false : (body.approved ?? false);
+
     const page = await notion.pages.create({
-      parent: { database_id: EVENTS_DB },
+      parent: { database_id: EVENTS_DB() },
       properties: {
         'Name': { title: [{ text: { content: body.name ?? '' } }] },
         'Description': { rich_text: [{ text: { content: body.description ?? '' } }] },
@@ -62,8 +84,8 @@ eventsRouter.post('/', requireAuth, async (req, res) => {
         'Format': { select: { name: body.format ?? 'Meetup' } },
         'Topic': { multi_select: (body.topics ?? []).map((t: string) => ({ name: t })) },
         'Price': { select: { name: body.price ?? 'Free' } },
-        'Approved': { checkbox: body.approved ?? false },
-        'Community': { relation: (body.communityIds ?? []).map((id: string) => ({ id })) },
+        'Approved': { checkbox: approved },
+        'Community': { relation: communityIds.map((id: string) => ({ id })) },
       },
     }) as any;
     res.json(parseEvent(page));
@@ -72,8 +94,17 @@ eventsRouter.post('/', requireAuth, async (req, res) => {
   }
 });
 
-eventsRouter.delete('/:id', requireAuth, async (req, res) => {
+eventsRouter.delete('/:id', requireAdminOrPortal, async (req, res) => {
   try {
+    const portalSession = getPortalSession(req);
+
+    if (portalSession) {
+      const existing = await notion.pages.retrieve({ page_id: req.params.id }) as any;
+      const existingEvent = parseEvent(existing);
+      const owns = existingEvent.communityIds.some((id: string) => portalSession.communityIds.includes(id));
+      if (!owns) return res.status(403).json({ error: 'Sem permissão para apagar este evento.' });
+    }
+
     await notion.pages.update({ page_id: req.params.id, archived: true });
     res.json({ ok: true });
   } catch (e: any) {

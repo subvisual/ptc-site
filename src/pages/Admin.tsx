@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SITE } from '@/lib/tokens';
 import { api, ApiCommunity, ApiEvent } from '@/lib/api';
 
@@ -6,7 +6,7 @@ interface AdminProps {
   onExit: () => void;
 }
 
-type Section = 'events' | 'communities' | 'config';
+type Section = 'events' | 'communities' | 'config' | 'portal';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -489,6 +489,63 @@ function SectionBlock({ title, children }: { title: string; children: React.Reac
   );
 }
 
+// ─── Portal section ──────────────────────────────────────────────────────────
+
+function PortalSection() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  async function send() {
+    if (!email) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const r = await api.sendMagicLink(email);
+      setResult({ ok: true, msg: `Link enviado para ${email} — comunidades: ${r.communities.join(', ')}` });
+      setEmail('');
+    } catch (e: any) {
+      setResult({ ok: false, msg: e.message });
+    } finally {
+      setLoading(false);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setResult(null), 8000);
+    }
+  }
+
+  return (
+    <div>
+      <SectionBlock title="Enviar magic link">
+        <p style={{ fontSize: 13, color: SITE.mute, marginBottom: 20, lineHeight: 1.6 }}>
+          Envia um link de acesso ao dashboard de comunidade para um community manager registado no CRM.
+          O link é válido por 24 horas.
+        </p>
+        <Field
+          label="Email do community manager"
+          value={email}
+          onChange={setEmail}
+          placeholder="manager@comunidade.pt"
+          type="email"
+        />
+        {result && (
+          <div style={{
+            padding: '10px 14px', fontSize: 12, marginBottom: 16,
+            border: `1px solid ${result.ok ? SITE.green : SITE.red}40`,
+            background: (result.ok ? SITE.green : SITE.red) + '10',
+            color: result.ok ? SITE.green : SITE.red,
+          }}>{result.msg}</div>
+        )}
+        <button onClick={send} disabled={loading || !email} style={{
+          background: SITE.ink, color: SITE.limestone, padding: '10px 24px',
+          fontWeight: 600, fontSize: 13, border: 'none', cursor: 'pointer', ...S,
+          opacity: !email ? 0.5 : 1,
+        }}>{loading ? '…' : 'Enviar link'}</button>
+      </SectionBlock>
+    </div>
+  );
+}
+
 // ─── Modal ────────────────────────────────────────────────────────────────────
 
 function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
@@ -544,6 +601,7 @@ export function Admin({ onExit }: AdminProps) {
     { key: 'events', label: 'Eventos' },
     { key: 'communities', label: 'Comunidades' },
     { key: 'config', label: 'Configuração' },
+    { key: 'portal', label: 'Portal' },
   ];
 
   return (
@@ -580,6 +638,7 @@ export function Admin({ onExit }: AdminProps) {
         {section === 'events' && <EventsSection communities={communities} />}
         {section === 'communities' && <CommunitiesSection />}
         {section === 'config' && <ConfigSection />}
+        {section === 'portal' && <PortalSection />}
       </div>
     </div>
   );
