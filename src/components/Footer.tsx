@@ -32,7 +32,7 @@ export function Footer({ onOpenAdmin }: FooterProps) {
               href="https://links.subvisual.com/"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: T.mute, textDecoration: 'underline', textUnderlineOffset: 3 }}
+              style={{ color: '#4353FF', textDecoration: 'underline', textUnderlineOffset: 3 }}
             >
               Subvisual
             </a>
