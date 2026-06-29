@@ -23,6 +23,20 @@ export function Footer({ onOpenAdmin }: FooterProps) {
           }}>
             Portuguese Tech Communities · 2026
           </div>
+          <div style={{
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+            color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
+          }}>
+            Powered by{' '}
+            <a
+              href="https://links.subvisual.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: T.mute, textDecoration: 'underline', textUnderlineOffset: 3 }}
+            >
+              Subvisual
+            </a>
+          </div>
         </div>
         <div style={{
           display: 'flex', gap: 24, flexWrap: 'wrap',

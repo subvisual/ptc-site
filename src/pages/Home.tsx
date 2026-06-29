@@ -1,11 +1,25 @@
-import { useState, useEffect } from 'react';
-import { SITE, SITE_PALETTE, INVERSE_PALETTE_HOME, COMMUNITIES, T, communityById } from '@/lib/tokens';
+import { useState, useEffect, useMemo } from 'react';
+import { SITE, SITE_PALETTE, INVERSE_PALETTE_HOME, COMMUNITIES, T, communityById, ThemeKey, THEMES } from '@/lib/tokens';
 import { StoneStamp, PaintedStones, makeFanPaint, makeWavePaint } from '@/lib/stones';
 import { NavBar, Page } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
 import { EventRow, DisplayEvent } from '@/components/EventRow';
 import { CommunityCard } from '@/components/CommunityCard';
+import { FilterBar } from '@/components/FilterBar';
 import { api, ApiEvent, ApiCommunity } from '@/lib/api';
+import { useSiteConfig } from '@/lib/siteConfig';
+
+const THEMEKEY_TO_TOPICS: Record<ThemeKey, string[]> = {
+  web:      ['JavaScript'],
+  ai:       ['AI / ML', 'Python'],
+  devops:   ['DevOps'],
+  mobile:   ['Mobile'],
+  design:   ['Design', 'Product Design'],
+  security: ['Security'],
+  oss:      ['Web3'],
+  career:   [],
+  hardware: ['Hardware'],
+};
 
 function toDisplayEvent(e: ApiEvent, communityMap: Map<string, ApiCommunity>): DisplayEvent {
   const comm = communityMap.get(e.communityIds[0]);
@@ -30,17 +44,55 @@ interface HomeProps {
 }
 
 export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
-  const [featured, setFeatured] = useState<DisplayEvent[]>([]);
-  const featuredComms = ['react-lisbon', 'python-pt', 'coimbra-ml', 'devops-porto'].map(communityById);
+  const [allEvents, setAllEvents] = useState<DisplayEvent[]>([]);
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [activeThemes, setActiveThemes] = useState<ThemeKey[]>([]);
+  const DEFAULT_COMM_IDS = ['react-lisbon', 'python-pt', 'coimbra-ml', 'devops-porto'];
+
+  const featuredComms = useMemo(() => {
+    const hasFilters = selectedCities.length > 0 || activeThemes.length > 0;
+    if (!hasFilters) return DEFAULT_COMM_IDS.map(communityById);
+    return COMMUNITIES.filter(c => {
+      const cityMatch = selectedCities.length === 0 || selectedCities.includes(c.city);
+      const themeMatch = activeThemes.length === 0 || activeThemes.some(tk => c.themes.includes(tk));
+      return cityMatch && themeMatch;
+    }).slice(0, 4);
+  }, [selectedCities, activeThemes]);
+  const { config } = useSiteConfig();
 
   useEffect(() => {
     Promise.all([api.getEvents(), api.getCommunities()])
       .then(([evts, comms]) => {
         const communityMap = new Map(comms.map(c => [c.notionId, c]));
-        setFeatured(evts.slice(0, 4).map(e => toDisplayEvent(e, communityMap)));
+        setAllEvents(evts.slice(0, 20).map(e => toDisplayEvent(e, communityMap)));
       })
       .catch(() => {});
   }, []);
+
+  const featured = useMemo(() => {
+    return allEvents.filter(e => {
+      const cityMatch = selectedCities.length === 0 || selectedCities.includes(e.region);
+      const themeMatch =
+        activeThemes.length === 0 ||
+        activeThemes.some(tk =>
+          (THEMEKEY_TO_TOPICS[tk] ?? []).some(t => e.topics.includes(t))
+        );
+      return cityMatch && themeMatch;
+    }).slice(0, 8);
+  }, [allEvents, selectedCities, activeThemes]);
+
+  function handleCityToggle(city: string) {
+    if (city === '__all__') { setSelectedCities([]); return; }
+    setSelectedCities(prev =>
+      prev.includes(city) ? prev.filter(c => c !== city) : [...prev, city]
+    );
+  }
+
+  function handleThemeToggle(key: ThemeKey) {
+    setActiveThemes(prev =>
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    );
+  }
 
   return (
     <div style={{ background: T.paper, minHeight: '100vh', fontFamily: '"Space Grotesk", sans-serif' }}>
@@ -79,6 +131,13 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
         </div>
       </div>
 
+      <FilterBar
+        selectedCities={selectedCities}
+        activeThemes={activeThemes}
+        onCityToggle={handleCityToggle}
+        onThemeToggle={handleThemeToggle}
+      />
+
       {/* Main content — This week + Communities side by side */}
       <div className="home-cols" style={{ borderBottom: `1px solid ${T.rule}` }}>
         {/* This week — left column */}
@@ -106,7 +165,9 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
             color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 20, paddingLeft: 48,
           }}>
-            12 events · 8 cities · 9 communities
+            {featured.length} event{featured.length !== 1 ? 's' : ''}
+            {selectedCities.length > 0 ? ` · ${selectedCities.join(', ')}` : ''}
+            {activeThemes.length > 0 ? ` · ${activeThemes.map(k => THEMES.find(t => t.key === k)?.label).join(', ')}` : ''}
           </div>
           {featured.map(e => (
             <EventRow
@@ -146,6 +207,67 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
           </div>
         </div>
       </div>
+
+      {/* CTA — newsletter / community channels */}
+      {(config.newsletterUrl || config.whatsappUrl || config.telegramUrl) && (
+        <div style={{
+          padding: '56px 48px',
+          borderBottom: `1px solid ${T.rule}`,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          gap: 32, textAlign: 'center',
+        }}>
+          <div>
+            <div style={{
+              fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
+              letterSpacing: '0.2em', textTransform: 'uppercase',
+              color: T.mute, marginBottom: 12,
+            }}>
+              Fica a par
+            </div>
+            <h2 style={{
+              fontWeight: 700, fontSize: 28, letterSpacing: '-0.02em',
+              color: T.ink, margin: 0,
+            }}>
+              Não percas nenhum evento
+            </h2>
+            <p style={{ fontSize: 16, color: T.inkSoft, marginTop: 10, marginBottom: 0 }}>
+              Subscreve a newsletter ou junta-te à conversa no WhatsApp ou Telegram.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {config.newsletterUrl && (
+              <a href={config.newsletterUrl} target="_blank" rel="noopener noreferrer" style={{
+                background: T.ink, color: T.limestone,
+                padding: '13px 22px', fontWeight: 600, fontSize: 14,
+                fontFamily: '"Space Grotesk", sans-serif',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                Newsletter →
+              </a>
+            )}
+            {config.whatsappUrl && (
+              <a href={config.whatsappUrl} target="_blank" rel="noopener noreferrer" style={{
+                background: '#25D366', color: '#fff',
+                padding: '13px 22px', fontWeight: 600, fontSize: 14,
+                fontFamily: '"Space Grotesk", sans-serif',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                WhatsApp →
+              </a>
+            )}
+            {config.telegramUrl && (
+              <a href={config.telegramUrl} target="_blank" rel="noopener noreferrer" style={{
+                background: '#229ED9', color: '#fff',
+                padding: '13px 22px', fontWeight: 600, fontSize: 14,
+                fontFamily: '"Space Grotesk", sans-serif',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                Telegram →
+              </a>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* CTA — submit */}
       <div style={{
