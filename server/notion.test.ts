@@ -21,9 +21,13 @@ vi.mock("@notionhq/client", () => ({
 	Client: vi.fn(() => mock),
 }));
 
-const { queryAll, getLeaderByEmail, parseLeader, getLeaders } = await import(
-	"./notion.js"
-);
+const {
+	queryAll,
+	getLeaderByEmail,
+	parseLeader,
+	getLeaders,
+	getCommunitiesByIds,
+} = await import("./notion.js");
 
 beforeEach(() => {
 	mock.databases.query.mockReset();
@@ -92,5 +96,25 @@ describe("getLeaders", () => {
 			approved: false,
 			communityIds: ["c1"],
 		});
+	});
+});
+
+function communityPage(id: string, name: string) {
+	return {
+		id,
+		properties: {
+			Name: { type: "title", title: [{ plain_text: name }] },
+			Slug: { type: "rich_text", rich_text: [] },
+		},
+	};
+}
+
+describe("getCommunitiesByIds", () => {
+	it("returns the communities that resolve and skips failures", async () => {
+		mock.pages.retrieve
+			.mockResolvedValueOnce(communityPage("c1", "Alpha"))
+			.mockRejectedValueOnce(new Error("gone"));
+		const rows = await getCommunitiesByIds(["c1", "c2"]);
+		expect(rows.map((c: any) => c.name)).toEqual(["Alpha"]);
 	});
 });

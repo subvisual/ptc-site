@@ -200,10 +200,12 @@ export async function getLeaders(pendingOnly = false): Promise<NotionLeader[]> {
 export async function getCommunitiesByIds(
 	ids: string[],
 ): Promise<NotionCommunity[]> {
-	const pages = await Promise.all(
+	const settled = await Promise.allSettled(
 		ids.map((id) => notion.pages.retrieve({ page_id: id })),
 	);
-	return pages.map(parseCommunity);
+	return settled
+		.filter((r): r is PromiseFulfilledResult<any> => r.status === "fulfilled")
+		.map((r) => parseCommunity(r.value));
 }
 
 export async function getCommunities(includeUnapproved = false) {
