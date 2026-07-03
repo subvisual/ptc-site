@@ -122,6 +122,27 @@ export function parseCommunity(page: any): NotionCommunity {
 	};
 }
 
+export interface NotionLeader {
+	notionId: string;
+	name: string;
+	email: string;
+	role: string;
+	communityIds: string[];
+	approved: boolean;
+}
+
+export function parseLeader(page: any): NotionLeader {
+	const p = page.properties;
+	return {
+		notionId: page.id,
+		name: richText(p["Name"]),
+		email: p["mail"]?.email ?? "",
+		role: selectVal(p["Role"]),
+		communityIds: relationIds(p["Community that leads"]),
+		approved: checkboxVal(p["Approved"]),
+	};
+}
+
 export function parseEvent(page: any): NotionEvent {
 	const p = page.properties;
 	return {
@@ -146,13 +167,34 @@ export async function getLeaderByEmail(
 ): Promise<{ communityIds: string[] } | null> {
 	const res = await notion.databases.query({
 		database_id: COMMUNITY_LEADERS_DB,
-		filter: { property: "mail", email: { equals: email } },
+		filter: {
+			and: [
+				{ property: "mail", email: { equals: email } },
+				{ property: "Approved", checkbox: { equals: true } },
+			],
+		},
 	});
 	if (!res.results.length) return null;
-	const communityIds = relationIds(
-		(res.results[0] as any).properties["Community that leads"],
-	);
-	return { communityIds };
+	const ids = new Set<string>();
+	for (const r of res.results) {
+		for (const id of relationIds(
+			(r as any).properties["Community that leads"],
+		)) {
+			ids.add(id);
+		}
+	}
+	const communityIds = [...ids];
+	return communityIds.length ? { communityIds } : null;
+}
+
+export async function getLeaders(pendingOnly = false): Promise<NotionLeader[]> {
+	const results = await queryAll({
+		database_id: COMMUNITY_LEADERS_DB,
+		filter: pendingOnly
+			? { property: "Approved", checkbox: { equals: false } }
+			: undefined,
+	});
+	return results.map(parseLeader);
 }
 
 export async function getCommunitiesByIds(

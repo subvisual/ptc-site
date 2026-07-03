@@ -21,7 +21,9 @@ vi.mock("@notionhq/client", () => ({
 	Client: vi.fn(() => mock),
 }));
 
-const { queryAll } = await import("./notion.js");
+const { queryAll, getLeaderByEmail, parseLeader, getLeaders } = await import(
+	"./notion.js"
+);
 
 beforeEach(() => {
 	mock.databases.query.mockReset();
@@ -35,5 +37,60 @@ describe("queryAll", () => {
 		const rows = await queryAll({ database_id: "db" });
 		expect(rows.map((r: any) => r.id)).toEqual(["a", "b"]);
 		expect(mock.databases.query).toHaveBeenCalledTimes(2);
+	});
+});
+
+function leaderPage(
+	id: string,
+	email: string,
+	approved: boolean,
+	commIds: string[],
+) {
+	return {
+		id,
+		properties: {
+			Name: { type: "title", title: [{ plain_text: "L" }] },
+			mail: { email },
+			Role: { select: { name: "Organizer" } },
+			"Community that leads": { relation: commIds.map((c) => ({ id: c })) },
+			Approved: { checkbox: approved },
+		},
+	};
+}
+
+describe("getLeaderByEmail", () => {
+	it("returns null when only unapproved records match", async () => {
+		mock.databases.query.mockResolvedValueOnce(queryPage([]));
+		const r = await getLeaderByEmail("x@y.com");
+		expect(r).toBeNull();
+		// the query must include an Approved=true filter
+		const arg = mock.databases.query.mock.calls[0][0];
+		expect(JSON.stringify(arg)).toContain("Approved");
+	});
+
+	it("merges communityIds across approved records", async () => {
+		mock.databases.query.mockResolvedValueOnce(
+			queryPage([
+				leaderPage("l1", "x@y.com", true, ["c1"]),
+				leaderPage("l2", "x@y.com", true, ["c2"]),
+			]),
+		);
+		const r = await getLeaderByEmail("x@y.com");
+		expect(r?.communityIds.sort()).toEqual(["c1", "c2"]);
+	});
+});
+
+describe("getLeaders", () => {
+	it("parses pending leaders", async () => {
+		mock.databases.query.mockResolvedValueOnce(
+			queryPage([leaderPage("l1", "x@y.com", false, ["c1"])]),
+		);
+		const rows = await getLeaders(true);
+		expect(rows[0]).toMatchObject({
+			notionId: "l1",
+			email: "x@y.com",
+			approved: false,
+			communityIds: ["c1"],
+		});
 	});
 });
