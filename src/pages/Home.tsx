@@ -88,7 +88,8 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
     );
   }
 
-  function handleThemeToggle(key: ThemeKey) {
+  function handleThemeToggle(key: ThemeKey | '__all__') {
+    if (key === '__all__') { setActiveThemes([]); return; }
     setActiveThemes(prev =>
       prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
     );
@@ -141,8 +142,8 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
       {/* Main content — Next events + Communities side by side */}
       <div className="home-cols" style={{ borderBottom: `1px solid ${T.rule}` }}>
         {/* Next events — left column */}
-        <div style={{ padding: '48px 48px 48px', borderRight: `1px solid ${T.rule}` }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+        <div className="page-pad" style={{ paddingTop: 48, paddingBottom: 48, borderRight: `1px solid ${T.rule}` }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <StoneStamp accent={SITE.green} size={10} />
               <h2 style={{ fontWeight: 700, fontSize: 24, color: T.ink, letterSpacing: '-0.01em', margin: 0 }}>
@@ -154,16 +155,17 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
               style={{
                 fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
                 color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
-                cursor: 'pointer',
+                cursor: 'pointer', whiteSpace: 'nowrap',
               }}
             >
               All events →
             </div>
           </div>
+          {/* TODO: when featured.length === 0, show a CTA or a joke instead of "0 events" */}
           <div style={{
             fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
             color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
-            marginBottom: 20, paddingLeft: 48,
+            marginBottom: 20, paddingLeft: 24,
           }}>
             {featured.length} event{featured.length !== 1 ? 's' : ''}
             {selectedCities.length > 0 ? ` · ${selectedCities.join(', ')}` : ''}
@@ -181,8 +183,8 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
         </div>
 
         {/* Communities — right column */}
-        <div style={{ padding: '48px 48px 48px', background: T.paperWarm }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div className="page-pad" style={{ paddingTop: 48, paddingBottom: 48, background: T.paperWarm }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <StoneStamp accent={SITE.blue} size={10} />
               <h2 style={{ fontWeight: 700, fontSize: 24, color: T.ink, letterSpacing: '-0.01em', margin: 0 }}>
@@ -194,7 +196,7 @@ export function Home({ onNavigate, onOpenSubmit, onOpenAdmin }: HomeProps) {
               style={{
                 fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
                 color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase',
-                cursor: 'pointer',
+                cursor: 'pointer', whiteSpace: 'nowrap',
               }}
             >
               All 12 →

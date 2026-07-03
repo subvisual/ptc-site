@@ -59,8 +59,8 @@ export function CommunityDetail({ communityId, onNavigate, onOpenSubmit, onOpenA
       <NavBar active="communities" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
       {/* Breadcrumb */}
-      <div style={{
-        padding: '20px 48px', borderBottom: `1px solid ${T.rule}`,
+      <div className="page-pad" style={{
+        paddingTop: 20, paddingBottom: 20, borderBottom: `1px solid ${T.rule}`,
         fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
         color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
       }}>
@@ -145,7 +145,7 @@ export function CommunityDetail({ communityId, onNavigate, onOpenSubmit, onOpenA
       </div>
 
       {/* Events */}
-      <div style={{ padding: '48px 48px 64px', flex: 1 }}>
+      <div className="page-pad" style={{ paddingTop: 48, paddingBottom: 64, flex: 1 }}>
         {/* Tab toggle */}
         <div style={{ display: 'flex', gap: 0, marginBottom: 32, borderBottom: `1px solid ${T.rule}` }}>
           {(['upcoming', 'past'] as const).map(tab => (

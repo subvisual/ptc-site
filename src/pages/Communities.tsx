@@ -24,7 +24,8 @@ export function Communities({ onNavigate, onOpenSubmit, onOpenAdmin }: Communiti
     );
   }
 
-  function handleThemeToggle(key: ThemeKey) {
+  function handleThemeToggle(key: ThemeKey | '__all__') {
+    if (key === '__all__') { setActiveThemes([]); return; }
     setActiveThemes(prev =>
       prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
     );
@@ -43,7 +44,7 @@ export function Communities({ onNavigate, onOpenSubmit, onOpenAdmin }: Communiti
       <NavBar active="communities" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
       {/* Page header */}
-      <div style={{ padding: '40px 48px 24px' }}>
+      <div className="page-pad" style={{ paddingTop: 40, paddingBottom: 24 }}>
         <div style={{
           fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
           color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8,
@@ -62,7 +63,7 @@ export function Communities({ onNavigate, onOpenSubmit, onOpenAdmin }: Communiti
         onThemeToggle={handleThemeToggle}
       />
 
-      <div style={{ padding: '32px 48px 64px' }}>
+      <div className="page-pad" style={{ paddingTop: 32, paddingBottom: 64 }}>
         {filtered.length === 0 ? (
           <div style={{
             marginTop: 40, textAlign: 'center',

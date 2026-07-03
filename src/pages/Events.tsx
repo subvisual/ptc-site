@@ -389,7 +389,8 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
     );
   }
 
-  function handleThemeToggle(key: ThemeKey) {
+  function handleThemeToggle(key: ThemeKey | '__all__') {
+    if (key === '__all__') { setActiveThemes([]); return; }
     setActiveThemes(prev =>
       prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
     );
@@ -417,7 +418,7 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
         onOpenSubmit={onOpenSubmit}
       />
 
-      <div style={{ padding: '40px 48px 24px' }}>
+      <div className="page-pad" style={{ paddingTop: 40, paddingBottom: 24 }}>
         <div style={{
           fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
           color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8,
@@ -439,7 +440,7 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
       />
 
       {view === 'list' && (
-        <div style={{ padding: '0 48px', borderBottom: `1px solid ${T.rule}`, display: 'flex' }}>
+        <div className="page-pad" style={{ borderBottom: `1px solid ${T.rule}`, display: 'flex' }}>
           {(['upcoming', 'past'] as const).map(tab => (
             <button
               key={tab}
@@ -460,7 +461,7 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
         </div>
       )}
 
-      <div style={{ padding: '0 48px 64px', flex: 1 }}>
+      <div className="page-pad" style={{ paddingBottom: 64, flex: 1 }}>
         {loading ? (
           <div style={{
             marginTop: 80, textAlign: 'center',

@@ -5,8 +5,8 @@ export function NewsletterCTA() {
   const { config } = useSiteConfig();
 
   return (
-    <div style={{
-      padding: '51px 48px',
+    <div className="page-pad" style={{
+      paddingTop: 51, paddingBottom: 51,
       borderBottom: `1px solid ${T.rule}`,
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: 29, textAlign: 'center',

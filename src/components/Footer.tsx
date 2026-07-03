@@ -25,7 +25,7 @@ export function Footer({ onOpenAdmin }: FooterProps) {
       <div style={{ background: T.ink }}>
         <StoneStripe width={1280} rows={1} cellSize={8} color={SITE.limestone} light={SITE.ink} accentColor={SITE.green} accentEvery={11} seed={99} />
       </div>
-      <div style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+      <div className="page-pad" style={{ paddingTop: 48, paddingBottom: 48, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <CleanCells cells={MARK_CELLS} size={1.4} palette={SITE_PALETTE} shape="square" />
           <div style={{

@@ -21,13 +21,15 @@ const NAV_ITEMS = [
 
 export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
   return (
-    <div style={{
+    <div className="page-pad navbar-row" style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '20px 48px', borderBottom: `1px solid ${T.rule}`,
+      flexWrap: 'wrap', rowGap: 12,
+      paddingTop: 20, paddingBottom: 20, borderBottom: `1px solid ${T.rule}`,
       background: T.paper,
     }}>
       <button
         onClick={() => onNavigate('home')}
+        className="navbar-logo-btn"
         style={{
           display: 'flex', alignItems: 'center', gap: 14,
           background: 'none', border: 'none', cursor: 'pointer', padding: 0,
@@ -53,13 +55,14 @@ export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
             return (
               <div
                 key={item.id}
+                className="navbar-submit-item"
                 onClick={handleClick}
                 style={{
                   fontFamily: '"Space Grotesk", sans-serif',
                   fontSize: 13, fontWeight: 600,
                   background: T.ink, color: T.limestone,
                   padding: '8px 16px',
-                  cursor: 'pointer',
+                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
                 }}
               >
                 {item.label} →
@@ -76,7 +79,7 @@ export function NavBar({ active, onNavigate, onOpenSubmit }: NavBarProps) {
                 color: isActive ? T.ink : T.mute,
                 borderBottom: isActive ? `2px solid ${T.ink}` : '2px solid transparent',
                 paddingBottom: 4,
-                cursor: 'pointer',
+                cursor: 'pointer', whiteSpace: 'nowrap',
               }}
             >
               {item.label}

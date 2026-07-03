@@ -7,10 +7,10 @@ interface SubmitCommunityCTAProps {
 
 export function SubmitCommunityCTA({ onOpenSubmit }: SubmitCommunityCTAProps) {
   return (
-    <div style={{
-      padding: '64px 48px',
+    <div className="page-pad" style={{
+      paddingTop: 64, paddingBottom: 64,
       background: T.ink, color: T.limestone,
-      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center',
       gap: 32, position: 'relative', overflow: 'hidden',
     }}>
       <div style={{ position: 'absolute', right: -60, top: -40, opacity: 0.18, pointerEvents: 'none' }}>

@@ -41,7 +41,7 @@ export function About({ onNavigate, onOpenSubmit, onOpenAdmin }: AboutProps) {
     <div style={{ background: T.paper, minHeight: '100vh', fontFamily: '"Space Grotesk", sans-serif', display: 'flex', flexDirection: 'column' }}>
       <NavBar active="home" onNavigate={onNavigate} onOpenSubmit={onOpenSubmit} />
 
-      <div style={{ padding: '40px 48px 24px' }}>
+      <div className="page-pad" style={{ paddingTop: 40, paddingBottom: 24 }}>
         <div style={{
           fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
           color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8,
@@ -53,7 +53,7 @@ export function About({ onNavigate, onOpenSubmit, onOpenAdmin }: AboutProps) {
         </h1>
       </div>
 
-      <div style={{ padding: '0 48px 64px', maxWidth: 760, flex: 1 }}>
+      <div className="page-pad" style={{ paddingBottom: 64, maxWidth: 760, flex: 1 }}>
         <p style={{ color: T.inkSoft, fontSize: 16, lineHeight: 1.65, marginTop: 24 }}>
           {config.aboutText}
         </p>

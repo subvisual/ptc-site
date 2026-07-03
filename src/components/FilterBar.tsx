@@ -19,10 +19,11 @@ export function FilterBar({
 }: FilterBarProps) {
   const CITY_LIST = CITIES.filter(c => c !== 'All cities');
   const allCitiesSelected = selectedCities.length === 0;
+  const allThemesSelected = activeThemes.length === 0;
 
   return (
-    <div style={{
-      padding: '20px 48px', borderBottom: `1px solid ${T.rule}`, background: T.paper,
+    <div className="page-pad" style={{
+      paddingTop: 20, paddingBottom: 20, borderBottom: `1px solid ${T.rule}`, background: T.paper,
     }}>
       {/* Cities */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
@@ -72,7 +73,21 @@ export function FilterBar({
           <span style={{
             fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
             color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
-          }}>Themes</span>
+          }}>Topics</span>
+          <span
+            onClick={() => onThemeToggle?.('__all__' as ThemeKey)}
+            style={{
+              fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              padding: '4px 10px',
+              color: allThemesSelected ? T.limestone : T.ink,
+              background: allThemesSelected ? T.ink : 'transparent',
+              border: `1px solid ${T.ink}`,
+              cursor: 'pointer',
+            }}
+          >
+            All
+          </span>
           {THEMES.map(t => {
             const on = activeThemes.includes(t.key as ThemeKey);
             return (
