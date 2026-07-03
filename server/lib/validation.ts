@@ -3,7 +3,13 @@ import { z } from "zod";
 // Shared field primitives with length caps to bound what we write into Notion.
 const shortStr = z.string().max(200);
 const longStr = z.string().max(5000);
-const urlStr = z.string().max(500);
+const urlStr = z
+	.string()
+	.max(500)
+	.trim()
+	.refine((v) => v === "" || /^https?:\/\//i.test(v), {
+		message: "URL deve começar por http:// ou https://",
+	});
 const topicList = z.array(z.string().max(80)).max(30);
 const idList = z.array(z.string().max(100)).max(50);
 
