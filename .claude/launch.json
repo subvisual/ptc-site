@@ -5,7 +5,16 @@
       "name": "ptc-dev",
       "runtimeExecutable": "/Users/paulo/.local/share/pnpm/pnpm",
       "runtimeArgs": ["dev"],
-      "port": 5173
+      "port": 5173,
+      "autoPort": true
+    },
+    {
+      "name": "ptc-preview",
+      "runtimeExecutable": "/Users/paulo/.local/share/pnpm/pnpm",
+      "runtimeArgs": ["preview"],
+      "env": { "PORT": "4173" },
+      "port": 4173,
+      "autoPort": true
     }
   ]
 }
