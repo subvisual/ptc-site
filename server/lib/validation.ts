@@ -63,6 +63,10 @@ export const magicLinkInput = z.object({
 	email: z.string().email().max(200),
 });
 
+export const leaderUpdateInput = z.object({
+	approved: z.boolean(),
+});
+
 export const loginInput = z.object({
 	password: z.string().min(1).max(200),
 });

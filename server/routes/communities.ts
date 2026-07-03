@@ -4,7 +4,9 @@ import {
 	COMMUNITIES_DB,
 	COMMUNITY_LEADERS_DB,
 	getCommunities,
+	getLeaders,
 	parseCommunity,
+	parseLeader,
 } from "../notion.js";
 import { requireAuth, verifyAdminSession } from "./auth.js";
 import { serverError } from "../lib/http.js";
@@ -14,6 +16,7 @@ import {
 	communityInput,
 	communitySubmitInput,
 	submitLeaderInput,
+	leaderUpdateInput,
 } from "../lib/validation.js";
 
 export const communitiesRouter = Router();
@@ -25,6 +28,29 @@ communitiesRouter.get("/", async (req, res) => {
 			req.query.all === "true" && verifyAdminSession(req);
 		const data = await getCommunities(includeUnapproved);
 		res.json(data);
+	} catch (e) {
+		serverError(res, e);
+	}
+});
+
+communitiesRouter.get("/leaders", requireAuth, async (req, res) => {
+	try {
+		const pendingOnly = req.query.pending === "true";
+		res.json(await getLeaders(pendingOnly));
+	} catch (e) {
+		serverError(res, e);
+	}
+});
+
+communitiesRouter.put("/leaders/:id", requireAuth, async (req, res) => {
+	try {
+		const parsed = validate(leaderUpdateInput, req.body);
+		if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+		const updated = await notion.pages.update({
+			page_id: req.params.id,
+			properties: { Approved: { checkbox: parsed.data.approved } },
+		});
+		res.json(parseLeader(updated));
 	} catch (e) {
 		serverError(res, e);
 	}
@@ -113,6 +139,7 @@ communitiesRouter.post(
 					mail: { email: email.trim() },
 					...(role?.trim() ? { Role: { select: { name: role.trim() } } } : {}),
 					"Community that leads": { relation: [{ id: communityId }] },
+					Approved: { checkbox: false },
 				},
 			});
 			res.json({ ok: true });
