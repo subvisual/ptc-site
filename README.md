@@ -140,6 +140,8 @@ Magic link enviado por email. O admin vai a **Admin → Portal** e insere o emai
 3. Envia email via Resend com link `GET /api/portal/auth/:token`
 4. Ao clicar, o servidor valida o token, cria cookie `ptc_portal` assinado, e redireciona para `/#portal`
 
+> ⚠️ O magic link viaja no path do URL (`/api/portal/auth/:token`). Configura o reverse proxy para não registar o path completo desta rota nos access logs (scrub `/api/portal/auth/*`).
+
 ---
 
 ## Notion — bases de dados
@@ -152,16 +154,19 @@ As bases já estão pré-configuradas. Os IDs default estão em `server/notion.t
 | Communities | `NOTION_COMMUNITIES_DB` | Name, Slug, Region, Topic, Members, Founded, Description, Community Page, Logo URL, Status, Approved |
 | Community Leaders | (hardcoded) | mail, Community (relation) |
 
+> **Nota:** `Community Leaders` precisa de uma propriedade `Approved` (checkbox). Submissões de líderes ficam por aprovar até um admin as aprovar em **Admin → Líderes**.
+
 ---
 
 ## Build para produção
 
 ```bash
-pnpm build          # compila frontend para dist/
-node server/index   # serve o API (necessita transpilação prévia)
+pnpm build            # compila o frontend para dist/
+NODE_ENV=production pnpm start   # arranca o API (tsx) — serve /api/* e, se dist/ existir, o SPA
 ```
 
-> Em produção, servir os ficheiros estáticos de `dist/` com um servidor web (nginx, Caddy) e apontar `/api/*` para o processo Node.
+Em produção, um reverse proxy (nginx/Caddy) pode servir `dist/` e encaminhar `/api/*`
+para o processo Node, ou o próprio processo serve `dist/`.
 
 ---
 

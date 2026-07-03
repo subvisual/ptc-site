@@ -9,6 +9,7 @@
     "dev:api": "tsx watch server/index.ts",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "tsx server/index.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -43,7 +44,12 @@
     "tailwindcss": "^4.1.14",
     "tsx": "^4.22.3",
     "typescript": "^5.8.3",
-    "vite": "^7.3.0",
+    "vite": "^7.3.6",
     "vitest": "^3"
+  },
+  "pnpm": {
+    "overrides": {
+      "form-data@>=4.0.0 <4.0.6": ">=4.0.6"
+    }
   }
 }
