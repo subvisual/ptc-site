@@ -24,27 +24,31 @@ export const DEFAULT_CONFIG: SiteConfig = {
   adminPassword: 'ptcadmin',
   notionFormUrl: '',
   notionFormEmbed: false,
-  contactFormUrl: '',
+  contactFormUrl: 'https://subvisual.notion.site/e99c402a87554e1da9d6242c1a8f4cd3',
   newsletterUrl: '',
-  whatsappUrl: '',
-  telegramUrl: '',
+  whatsappUrl: 'https://www.whatsapp.com/channel/0029VbClHwg7oQhYhNupxd3R',
+  telegramUrl: 'https://t.me/+NPjwePZ6jEVmMmM8',
   twitterUrl: '',
   linkedinUrl: '',
   instagramUrl: '',
   aboutText:
-    'Portuguese Tech Communities (PTC) é um diretório de meetups, talks e eventos de tecnologia por todo Portugal. Curado pelos próprios organizadores das comunidades.',
+    'Portuguese Tech Communities (PTC) is a directory of meetups, talks, and tech events happening across Portugal. Curated by the organizers themselves.',
   faqs: [
     {
-      q: 'Como posso adicionar a minha comunidade?',
-      a: 'Clica em "Submit yours" e preenche o formulário. A equipa do PTC irá rever e publicar brevemente.',
+      q: 'How can I add my community?',
+      a: 'Click "Submit yours" and fill in the form. The PTC team will review and publish it shortly.',
     },
     {
-      q: 'O PTC é gratuito?',
-      a: 'Sim, o diretório é completamente gratuito tanto para organizadores como para participantes.',
+      q: 'Is PTC free?',
+      a: 'Yes, the directory is completely free for both organizers and participants.',
     },
     {
-      q: 'Com que frequência são atualizados os eventos?',
-      a: 'Os eventos são atualizados continuamente pelos organizadores das respetivas comunidades.',
+      q: 'How often are events updated?',
+      a: 'Events are updated continuously by the organizers of each community.',
+    },
+    {
+      q: 'What events are listed here?',
+      a: 'Only in-person events organized by and run within Portugal\'s tech communities. Standalone events that aren\'t tied to a community aren\'t part of the curation, at least for now.',
     },
   ],
 };

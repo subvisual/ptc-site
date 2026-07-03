@@ -1,6 +1,7 @@
 import { SITE, SITE_PALETTE, T } from '@/lib/tokens';
 import { CleanCells, StoneStripe } from '@/lib/stones';
 import { ptcBubbleCells } from '@/lib/marks';
+import { useSiteConfig } from '@/lib/siteConfig';
 
 const MARK_CELLS = ptcBubbleCells();
 
@@ -9,6 +10,16 @@ interface FooterProps {
 }
 
 export function Footer({ onOpenAdmin }: FooterProps) {
+  const { config } = useSiteConfig();
+
+  const links = [
+    { label: 'linkedin', url: config.linkedinUrl },
+    { label: 'twitter', url: config.twitterUrl },
+    { label: 'telegram', url: config.telegramUrl },
+    { label: 'whatsapp', url: config.whatsappUrl },
+    { label: 'contact', url: config.contactFormUrl },
+  ].filter(l => l.url);
+
   return (
     <div style={{ background: T.paperWarm }}>
       <div style={{ background: T.ink }}>
@@ -43,10 +54,17 @@ export function Footer({ onOpenAdmin }: FooterProps) {
           fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
           color: T.mute, letterSpacing: '0.12em', textTransform: 'uppercase',
         }}>
-          <span style={{ cursor: 'pointer' }}>github</span>
-          <span style={{ cursor: 'pointer' }}>twitter</span>
-          <span style={{ cursor: 'pointer' }}>discord</span>
-          <span style={{ cursor: 'pointer' }}>contact</span>
+          {links.map(l => (
+            <a
+              key={l.label}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: T.mute, textDecoration: 'none', cursor: 'pointer' }}
+            >
+              {l.label}
+            </a>
+          ))}
           {onOpenAdmin && (
             <span onClick={onOpenAdmin} style={{ cursor: 'pointer', opacity: 0.5 }}>admin</span>
           )}

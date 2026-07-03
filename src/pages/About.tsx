@@ -58,33 +58,54 @@ export function About({ onNavigate, onOpenSubmit, onOpenAdmin }: AboutProps) {
           {config.aboutText}
         </p>
 
-        {(socialLinks.length > 0 || communityLinks.length > 0 || config.newsletterUrl) && (
-          <div style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${T.rule}` }}>
-            <div style={{
-              fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
-              color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16,
-            }}>
-              Links
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-              {config.newsletterUrl && (
-                <a href={config.newsletterUrl} target="_blank" rel="noreferrer" style={linkChipStyle(SITE.green)}>
-                  Newsletter →
-                </a>
-              )}
-              {communityLinks.map(l => (
-                <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={linkChipStyle(T.ink as string)}>
-                  {l.label} →
-                </a>
-              ))}
-              {socialLinks.map(l => (
-                <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={linkChipStyle(T.mute as string)}>
-                  {l.label}
-                </a>
-              ))}
-            </div>
+        <div style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${T.rule}` }}>
+          <div style={{
+            fontFamily: '"JetBrains Mono", monospace', fontSize: 10,
+            color: T.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16,
+          }}>
+            Links
           </div>
-        )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            <form
+              action="https://assets.mailerlite.com/jsonp/2487537/forms/191964402954536333/subscribe"
+              method="post"
+              target="_blank"
+              style={{ display: 'flex' }}
+            >
+              <input type="hidden" name="ml-submit" value="1" />
+              <input type="hidden" name="anticsrf" value="true" />
+              <input
+                type="email"
+                name="fields[email]"
+                required
+                placeholder="Email for newsletter"
+                style={{
+                  fontFamily: '"JetBrains Mono", monospace', fontSize: 11,
+                  letterSpacing: '0.05em',
+                  padding: '6px 12px',
+                  border: `1px solid ${SITE.green}`,
+                  borderRight: 'none',
+                  background: 'transparent',
+                  color: T.ink,
+                  width: 170,
+                }}
+              />
+              <button type="submit" style={{ ...linkChipStyle(SITE.green), borderLeft: 'none', background: 'none', cursor: 'pointer' }}>
+                Newsletter →
+              </button>
+            </form>
+            {communityLinks.map(l => (
+              <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={linkChipStyle(T.ink as string)}>
+                {l.label} →
+              </a>
+            ))}
+            {socialLinks.map(l => (
+              <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={linkChipStyle(T.mute as string)}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </div>
 
         {config.faqs.length > 0 && (
           <div style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${T.rule}` }}>
@@ -95,7 +116,7 @@ export function About({ onNavigate, onOpenSubmit, onOpenAdmin }: AboutProps) {
               FAQ
             </div>
             {config.faqs.map((faq, i) => (
-              <div key={i} style={{ borderBottom: `1px solid ${T.rule}` }}>
+              <div key={i} style={{ borderBottom: i < config.faqs.length - 1 ? `1px solid ${T.rule}` : 'none' }}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   style={{

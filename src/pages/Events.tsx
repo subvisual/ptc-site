@@ -4,6 +4,8 @@ import { NavBar, Page } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
 import { FilterBar } from '@/components/FilterBar';
 import { EventRow, DisplayEvent } from '@/components/EventRow';
+import { NewsletterCTA } from '@/components/NewsletterCTA';
+import { SubmitCommunityCTA } from '@/components/SubmitCommunityCTA';
 import { api, ApiEvent, ApiCommunity } from '@/lib/api';
 
 interface EventsProps {
@@ -506,6 +508,10 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
           ))
         )}
       </div>
+
+      <NewsletterCTA />
+
+      <SubmitCommunityCTA onOpenSubmit={onOpenSubmit} />
 
       <Footer />
     </div>

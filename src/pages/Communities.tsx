@@ -4,6 +4,8 @@ import { NavBar, Page } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
 import { FilterBar } from '@/components/FilterBar';
 import { CommunityCard } from '@/components/CommunityCard';
+import { NewsletterCTA } from '@/components/NewsletterCTA';
+import { SubmitCommunityCTA } from '@/components/SubmitCommunityCTA';
 
 interface CommunitiesProps {
   onNavigate: (page: Page, communityId?: string) => void;
@@ -81,6 +83,10 @@ export function Communities({ onNavigate, onOpenSubmit, onOpenAdmin }: Communiti
           </div>
         )}
       </div>
+
+      <NewsletterCTA />
+
+      <SubmitCommunityCTA onOpenSubmit={onOpenSubmit} />
 
       <Footer onOpenAdmin={onOpenAdmin} />
     </div>
