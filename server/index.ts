@@ -21,9 +21,25 @@ const isProd = process.env.NODE_ENV === "production";
 // limiting) reflects the real client, not the proxy.
 if (isProd) app.set("trust proxy", 1);
 
-// Security headers. CSP is left off because the SPA relies on inline styles and
-// external Google Fonts; configure a CSP if/when those are removed.
-app.use(helmet({ contentSecurityPolicy: false }));
+// Security headers, including a CSP restricting scripts/styles/fonts to self
+// and the Google Fonts origins the SPA loads.
+app.use(
+	helmet({
+		contentSecurityPolicy: {
+			directives: {
+				defaultSrc: ["'self'"],
+				scriptSrc: ["'self'"],
+				styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+				fontSrc: ["https://fonts.gstatic.com"],
+				imgSrc: ["'self'", "data:", "https:"],
+				connectSrc: ["'self'"],
+				objectSrc: ["'none'"],
+				baseUri: ["'self'"],
+				frameAncestors: ["'none'"],
+			},
+		},
+	}),
+);
 app.use(express.json({ limit: "100kb" }));
 app.use(cookieParser());
 
