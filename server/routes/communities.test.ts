@@ -84,3 +84,14 @@ describe("PUT /leaders/:id", () => {
 		expect(res.body.approved).toBe(true);
 	});
 });
+
+describe("GET /:id database-membership guard", () => {
+	it("404s a page that is not in the communities DB", async () => {
+		mock.pages.retrieve.mockResolvedValueOnce({
+			id: "p1",
+			parent: { type: "database_id", database_id: "some-other-db" },
+			properties: { Approved: { checkbox: true } },
+		});
+		await request(app()).get("/api/communities/p1").expect(404);
+	});
+});

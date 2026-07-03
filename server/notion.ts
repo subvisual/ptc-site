@@ -6,6 +6,16 @@ export const COMMUNITIES_DB = () =>
 	process.env.NOTION_COMMUNITIES_DB ?? "358caae5-8631-80b0-af88-d19d858259f5";
 export const COMMUNITY_LEADERS_DB = "358caae5-8631-8080-8831-eba40cc28ca1";
 
+const stripDashes = (s: string) => s.replace(/-/g, "").toLowerCase();
+
+export function pageInDatabase(page: any, dbId: string): boolean {
+	const parent = page?.parent;
+	return (
+		parent?.type === "database_id" &&
+		stripDashes(parent.database_id ?? "") === stripDashes(dbId)
+	);
+}
+
 let _client: Client | null = null;
 function getClient(): Client {
 	if (!_client) {

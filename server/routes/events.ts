@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { notion, EVENTS_DB, getEvents, parseEvent } from "../notion.js";
+import {
+	notion,
+	EVENTS_DB,
+	getEvents,
+	pageInDatabase,
+	parseEvent,
+} from "../notion.js";
 import { verifyAdminSession } from "./auth.js";
 import { getPortalSession } from "./portal.js";
 import { serverError } from "../lib/http.js";
@@ -47,6 +53,9 @@ eventsRouter.get("/:id", async (req, res) => {
 		const page = (await notion.pages.retrieve({
 			page_id: req.params.id,
 		})) as any;
+		if (!pageInDatabase(page, EVENTS_DB())) {
+			return res.status(404).json({ error: "Evento não encontrado." });
+		}
 		const event = parseEvent(page);
 		// Don't expose unapproved events to the public; only admins or owning leaders.
 		if (!event.approved) {

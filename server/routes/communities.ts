@@ -5,6 +5,7 @@ import {
 	COMMUNITY_LEADERS_DB,
 	getCommunities,
 	getLeaders,
+	pageInDatabase,
 	parseCommunity,
 	parseLeader,
 } from "../notion.js";
@@ -61,6 +62,9 @@ communitiesRouter.get("/:id", async (req, res) => {
 		const page = (await notion.pages.retrieve({
 			page_id: req.params.id,
 		})) as any;
+		if (!pageInDatabase(page, COMMUNITIES_DB())) {
+			return res.status(404).json({ error: "Comunidade não encontrada." });
+		}
 		const community = parseCommunity(page);
 		// Unapproved communities are only visible to admins.
 		if (!community.approved && !verifyAdminSession(req)) {
