@@ -39,12 +39,17 @@ O frontend fica em `http://localhost:5173` e o API em `http://localhost:3001`. O
 | `NOTION_TOKEN` | ✅ | Token de integração Notion (`secret_…`) |
 | `NOTION_EVENTS_DB` | | ID da base de dados de eventos (default já configurado) |
 | `NOTION_COMMUNITIES_DB` | | ID da base de dados de comunidades (default já configurado) |
-| `ADMIN_PASSWORD` | | Password do painel admin (default: `ptcadmin`) |
-| `SESSION_SECRET` | ✅ em produção | Segredo HMAC para assinar cookies de sessão |
+| `ADMIN_PASSWORD` | ✅ em produção | Password do painel admin (não pode ser o default `ptcadmin`) |
+| `SESSION_SECRET` | ✅ em produção | Segredo HMAC para cookies de sessão (mín. 32 caracteres, único) |
+| `NODE_ENV` | | `production` em deploy — ativa cookies `secure`, `trust proxy` e validação fail-fast |
 | `API_PORT` | | Porta do servidor API (default: `3001`) |
 | `RESEND_API_KEY` | | API key Resend (necessária para magic links do portal) |
 | `RESEND_FROM` | | Endereço de remetente (default: `noreply@ptc.pt`) |
 | `SITE_URL` | | URL público do site (default: `http://localhost:5173`) |
+
+> Em produção (`NODE_ENV=production`) o servidor **recusa arrancar** se `SESSION_SECRET`
+> ou `ADMIN_PASSWORD` estiverem em falta ou com os valores default. Gera um segredo com:
+> `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
 
 ---
 
