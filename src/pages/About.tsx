@@ -3,6 +3,7 @@ import { SITE, T } from '@/lib/tokens';
 import { NavBar, Page } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
 import { useSiteConfig } from '@/lib/siteConfig';
+import { safeHref } from '@/lib/safeHref';
 
 interface AboutProps {
   onNavigate: (page: Page) => void;
@@ -95,12 +96,12 @@ export function About({ onNavigate, onOpenSubmit, onOpenAdmin }: AboutProps) {
               </button>
             </form>
             {communityLinks.map(l => (
-              <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={linkChipStyle(T.ink as string)}>
+              <a key={l.label} href={safeHref(l.url)} target="_blank" rel="noreferrer" style={linkChipStyle(T.ink as string)}>
                 {l.label} →
               </a>
             ))}
             {socialLinks.map(l => (
-              <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={linkChipStyle(T.mute as string)}>
+              <a key={l.label} href={safeHref(l.url)} target="_blank" rel="noreferrer" style={linkChipStyle(T.mute as string)}>
                 {l.label}
               </a>
             ))}
@@ -151,7 +152,7 @@ export function About({ onNavigate, onOpenSubmit, onOpenAdmin }: AboutProps) {
           </div>
           {config.contactFormUrl ? (
             <a
-              href={config.contactFormUrl}
+              href={safeHref(config.contactFormUrl)}
               target="_blank"
               rel="noreferrer"
               style={{

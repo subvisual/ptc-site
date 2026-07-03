@@ -14,6 +14,15 @@ export interface ApiCommunity {
   approved: boolean;
 }
 
+export interface ApiLeader {
+  notionId: string;
+  name: string;
+  email: string;
+  role: string;
+  communityIds: string[];
+  approved: boolean;
+}
+
 export interface ApiEvent {
   id: string;
   notionId: string;
@@ -74,6 +83,14 @@ export const api = {
     }),
   deleteCommunity: (id: string) =>
     apiFetch(`/api/communities/${id}`, { method: 'DELETE' }),
+  getLeaders: (pending = false) =>
+    apiFetch<ApiLeader[]>(`/api/communities/leaders${pending ? '?pending=true' : ''}`),
+  updateLeader: (id: string, approved: boolean) =>
+    apiFetch<ApiLeader>(`/api/communities/leaders/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ approved }),
+    }),
 
   // Events
   getEvents: (opts: { all?: boolean; past?: boolean } = {}) => {

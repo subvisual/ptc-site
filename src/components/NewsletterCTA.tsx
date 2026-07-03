@@ -1,5 +1,6 @@
 import { T } from '@/lib/tokens';
 import { useSiteConfig } from '@/lib/siteConfig';
+import { safeHref } from '@/lib/safeHref';
 
 export function NewsletterCTA() {
   const { config } = useSiteConfig();
@@ -57,7 +58,7 @@ export function NewsletterCTA() {
       </form>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
         {config.whatsappUrl && (
-          <a href={config.whatsappUrl} target="_blank" rel="noopener noreferrer" style={{
+          <a href={safeHref(config.whatsappUrl)} target="_blank" rel="noopener noreferrer" style={{
             background: '#25D366', color: '#fff',
             padding: '13px 19px', fontWeight: 600, fontSize: 11,
             fontFamily: '"Space Grotesk", sans-serif',
@@ -67,7 +68,7 @@ export function NewsletterCTA() {
           </a>
         )}
         {config.telegramUrl && (
-          <a href={config.telegramUrl} target="_blank" rel="noopener noreferrer" style={{
+          <a href={safeHref(config.telegramUrl)} target="_blank" rel="noopener noreferrer" style={{
             background: '#229ED9', color: '#fff',
             padding: '13px 19px', fontWeight: 600, fontSize: 11,
             fontFamily: '"Space Grotesk", sans-serif',

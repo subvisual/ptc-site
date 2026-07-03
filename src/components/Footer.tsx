@@ -2,6 +2,7 @@ import { SITE, SITE_PALETTE, T } from '@/lib/tokens';
 import { CleanCells, StoneStripe } from '@/lib/stones';
 import { ptcBubbleCells } from '@/lib/marks';
 import { useSiteConfig } from '@/lib/siteConfig';
+import { safeHref } from '@/lib/safeHref';
 
 const MARK_CELLS = ptcBubbleCells();
 
@@ -57,7 +58,7 @@ export function Footer({ onOpenAdmin }: FooterProps) {
           {links.map(l => (
             <a
               key={l.label}
-              href={l.url}
+              href={safeHref(l.url)}
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: T.mute, textDecoration: 'none', cursor: 'pointer' }}
