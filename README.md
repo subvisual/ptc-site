@@ -184,28 +184,37 @@ versionado em [`.do/app.yaml`](.do/app.yaml): um único serviço web que corre
    ```bash
    doctl apps create --spec .do/app.yaml
    ```
-3. No dashboard da DO (**App → Settings → web → Environment Variables**), define
-   as variáveis **secretas** (tipo *Encrypted*, scope *Run Time*):
+3. Define as variáveis **secretas** no **componente `web`**
+   (**App → Settings → web → Environment Variables**), tipo *Encrypted*,
+   scope *Run Time* — não a nível da app (só o `web` precisa delas):
 
    | Variável | Notas |
    |----------|-------|
    | `NOTION_TOKEN` | token de integração Notion |
    | `ADMIN_PASSWORD` | valor forte, não-default (o servidor recusa arrancar caso contrário) |
    | `SESSION_SECRET` | ≥ 32 caracteres, único |
-   | `RESEND_API_KEY` | necessário para os magic links do portal |
 
    As não-secretas (`NODE_ENV`, `SITE_URL`, `RESEND_FROM`, `NOTION_EVENTS_DB`,
    `NOTION_COMMUNITIES_DB`) já vêm no spec. `SITE_URL=${APP_URL}` resolve
    automaticamente para o URL público (`*.ondigitalocean.app`).
 
+   `RESEND_API_KEY` é **opcional** — só é preciso para os magic links do portal
+   de líderes. Sem ela o site e o admin funcionam; falha apenas o envio do email
+   de convite. Fica para quando o domínio de email estiver verificado no Resend.
+
 ### Deploys seguintes
 
 `deploy_on_push: true` está ativo — cada push para `main` no GitHub dispara um
-build e deploy automáticos. Para aplicar alterações ao próprio spec:
+build e deploy automáticos; alterações de **código** vão por aqui e não mexem
+nas env vars.
 
-```bash
-doctl apps update <app-id> --spec .do/app.yaml
-```
+> ⚠️ `doctl apps update --spec` **substitui** toda a config da app: qualquer
+> secret definido só no dashboard (e ausente do spec) é **apagado** no próximo
+> update. Para mudar o próprio spec, volta a incluir os secrets antes de correr:
+>
+> ```bash
+> doctl apps update <app-id> --spec .do/app.yaml
+> ```
 
 ### Domínio próprio (mais tarde)
 

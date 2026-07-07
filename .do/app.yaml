@@ -4,13 +4,19 @@
 #   doctl apps create --spec .do/app.yaml       # first time
 #   doctl apps update <app-id> --spec .do/app.yaml
 #
-# SECRETS ARE NOT IN THIS FILE. After the app exists, set these in the
-# DO dashboard (App → Settings → web → Environment Variables),
-# each as an encrypted variable, RUN_TIME scope:
+# SECRETS ARE NOT IN THIS FILE. After the app exists, set these on the WEB
+# COMPONENT (App → Settings → web → Environment Variables), each as an
+# encrypted variable, RUN_TIME scope:
 #   - NOTION_TOKEN
 #   - ADMIN_PASSWORD      (non-default; server refuses to boot otherwise)
 #   - SESSION_SECRET      (>= 32 chars, unique)
+# Optional (only for the leaders-portal magic-link emails; skip for now):
 #   - RESEND_API_KEY
+#
+# CAUTION: `doctl apps update --spec` replaces the whole app config, so any
+# secret set only in the dashboard (and absent here) is DROPPED on the next
+# spec update. Push code changes via git (auto-deploy, leaves envs alone); if
+# you must update via spec, re-add the secrets to the spec first.
 name: ptc-site
 region: fra
 services:
