@@ -685,7 +685,7 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
 	const [loading, setLoading] = useState(true);
 	const [selectedCities, setSelectedCities] = useState<string[]>([]);
 	const [activeThemes, setActiveThemes] = useState<ThemeKey[]>([]);
-	const [view, setView] = useState<"list" | "calendar">("list");
+	const [view, setView] = useState<"list" | "calendar" | "map">("list");
 	const [showPast, setShowPast] = useState(false);
 
 	useEffect(() => {
@@ -834,6 +834,8 @@ export function Events({ onNavigate, onOpenSubmit }: EventsProps) {
 					</div>
 				) : view === "calendar" ? (
 					<CalendarView events={filtered} />
+				) : view === "map" ? (
+					<MapView events={filtered} />
 				) : groups.length === 0 ? (
 					<div
 						style={{

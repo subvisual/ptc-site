@@ -3,10 +3,10 @@ import { SITE, THEMES, ThemeKey, CITIES, T } from "@/lib/tokens";
 interface FilterBarProps {
 	selectedCities?: string[];
 	activeThemes?: ThemeKey[];
-	view?: "list" | "calendar";
+	view?: "list" | "calendar" | "map";
 	onCityToggle?: (city: string) => void;
 	onThemeToggle?: (key: ThemeKey) => void;
-	onViewChange?: (view: "list" | "calendar") => void;
+	onViewChange?: (view: "list" | "calendar" | "map") => void;
 }
 
 export function FilterBar({
