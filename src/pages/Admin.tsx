@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SITE } from '@/lib/tokens';
-import { api, ApiCommunity, ApiEvent } from '@/lib/api';
+import { api, ApiCommunity, ApiEvent, ApiLeader } from '@/lib/api';
 
 interface AdminProps {
   onExit: () => void;
 }
 
-type Section = 'events' | 'communities' | 'config' | 'portal';
+type Section = 'events' | 'communities' | 'leaders' | 'config' | 'portal';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -392,6 +392,85 @@ function CommunityRow({ comm, onToggle, onEdit, onDelete }: {
   );
 }
 
+// ─── Leaders section ──────────────────────────────────────────────────────────
+
+function LeadersSection({ communities }: { communities: ApiCommunity[] }) {
+  const [leaders, setLeaders] = useState<ApiLeader[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState('');
+  const commMap = Object.fromEntries(communities.map(c => [c.notionId, c.name]));
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { setLeaders(await api.getLeaders(false)); }
+    catch (e: any) { setMsg('Erro: ' + (e.message ?? 'falha ao carregar')); }
+    finally { setLoading(false); }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  async function toggle(l: ApiLeader) {
+    try {
+      const updated = await api.updateLeader(l.notionId, !l.approved);
+      setLeaders(prev => prev.map(x => x.notionId === updated.notionId ? updated : x));
+      setMsg('Guardado ✓'); setTimeout(() => setMsg(''), 2000);
+    } catch (e: any) {
+      setMsg('Erro: ' + (e.message ?? 'falha ao guardar'));
+    }
+  }
+
+  const pending = leaders.filter(l => !l.approved);
+  const approved = leaders.filter(l => l.approved);
+
+  function Row({ l }: { l: ApiLeader }) {
+    const comm = l.communityIds.map(id => commMap[id]).filter(Boolean).join(', ') || '—';
+    return (
+      <div style={{ border: `1px solid ${SITE.rule}`, padding: '14px 16px', marginBottom: 8,
+        background: l.approved ? '#fff' : SITE.limestone,
+        display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center' }}>
+        <div>
+          <div style={{ fontWeight: 600, fontSize: 14, color: SITE.ink }}>{l.email}</div>
+          <div style={{ ...MONO, fontSize: 11, color: SITE.mute }}>
+            {(l.name || '—')} · {(l.role || '—')} · {comm}
+          </div>
+        </div>
+        <ApproveBtn approved={l.approved} onToggle={() => toggle(l)} />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <span style={{ ...MONO, fontSize: 11, color: SITE.mute, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          {leaders.length} líderes
+        </span>
+        {pending.length > 0 && <Badge label={`${pending.length} por aprovar`} color={SITE.ochre} />}
+        {msg && <span style={{ fontSize: 12, color: SITE.green }}>{msg}</span>}
+      </div>
+      {loading ? (
+        <div style={{ color: SITE.mute, fontSize: 13, padding: 20 }}>A carregar…</div>
+      ) : (
+        <>
+          {pending.length > 0 && (
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ ...MONO, fontSize: 10, color: SITE.ochre, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>
+                Por aprovar ({pending.length})
+              </div>
+              {pending.map(l => <Row key={l.notionId} l={l} />)}
+            </div>
+          )}
+          <div>
+            <div style={{ ...MONO, fontSize: 10, color: SITE.mute, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>
+              Aprovados ({approved.length})
+            </div>
+            {approved.map(l => <Row key={l.notionId} l={l} />)}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Config section ───────────────────────────────────────────────────────────
 
 function ConfigSection() {
@@ -600,6 +679,7 @@ export function Admin({ onExit }: AdminProps) {
   const navItems: { key: Section; label: string }[] = [
     { key: 'events', label: 'Eventos' },
     { key: 'communities', label: 'Comunidades' },
+    { key: 'leaders', label: 'Líderes' },
     { key: 'config', label: 'Configuração' },
     { key: 'portal', label: 'Portal' },
   ];
@@ -637,6 +717,7 @@ export function Admin({ onExit }: AdminProps) {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 48px 80px' }}>
         {section === 'events' && <EventsSection communities={communities} />}
         {section === 'communities' && <CommunitiesSection />}
+        {section === 'leaders' && <LeadersSection communities={communities} />}
         {section === 'config' && <ConfigSection />}
         {section === 'portal' && <PortalSection />}
       </div>

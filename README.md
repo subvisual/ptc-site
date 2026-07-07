@@ -39,12 +39,17 @@ O frontend fica em `http://localhost:5173` e o API em `http://localhost:3001`. O
 | `NOTION_TOKEN` | ✅ | Token de integração Notion (`secret_…`) |
 | `NOTION_EVENTS_DB` | | ID da base de dados de eventos (default já configurado) |
 | `NOTION_COMMUNITIES_DB` | | ID da base de dados de comunidades (default já configurado) |
-| `ADMIN_PASSWORD` | | Password do painel admin (default: `ptcadmin`) |
-| `SESSION_SECRET` | ✅ em produção | Segredo HMAC para assinar cookies de sessão |
+| `ADMIN_PASSWORD` | ✅ em produção | Password do painel admin (não pode ser o default `ptcadmin`) |
+| `SESSION_SECRET` | ✅ em produção | Segredo HMAC para cookies de sessão (mín. 32 caracteres, único) |
+| `NODE_ENV` | | `production` em deploy — ativa cookies `secure`, `trust proxy` e validação fail-fast |
 | `API_PORT` | | Porta do servidor API (default: `3001`) |
 | `RESEND_API_KEY` | | API key Resend (necessária para magic links do portal) |
 | `RESEND_FROM` | | Endereço de remetente (default: `noreply@ptc.pt`) |
 | `SITE_URL` | | URL público do site (default: `http://localhost:5173`) |
+
+> Em produção (`NODE_ENV=production`) o servidor **recusa arrancar** se `SESSION_SECRET`
+> ou `ADMIN_PASSWORD` estiverem em falta ou com os valores default. Gera um segredo com:
+> `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
 
 ---
 
@@ -135,6 +140,8 @@ Magic link enviado por email. O admin vai a **Admin → Portal** e insere o emai
 3. Envia email via Resend com link `GET /api/portal/auth/:token`
 4. Ao clicar, o servidor valida o token, cria cookie `ptc_portal` assinado, e redireciona para `/#portal`
 
+> ⚠️ O magic link viaja no path do URL (`/api/portal/auth/:token`). Configura o reverse proxy para não registar o path completo desta rota nos access logs (scrub `/api/portal/auth/*`).
+
 ---
 
 ## Notion — bases de dados
@@ -147,16 +154,19 @@ As bases já estão pré-configuradas. Os IDs default estão em `server/notion.t
 | Communities | `NOTION_COMMUNITIES_DB` | Name, Slug, Region, Topic, Members, Founded, Description, Community Page, Logo URL, Status, Approved |
 | Community Leaders | (hardcoded) | mail, Community (relation) |
 
+> **Nota:** `Community Leaders` precisa de uma propriedade `Approved` (checkbox). Submissões de líderes ficam por aprovar até um admin as aprovar em **Admin → Líderes**.
+
 ---
 
 ## Build para produção
 
 ```bash
-pnpm build          # compila frontend para dist/
-node server/index   # serve o API (necessita transpilação prévia)
+pnpm build            # compila o frontend para dist/
+NODE_ENV=production pnpm start   # arranca o API (tsx) — serve /api/* e, se dist/ existir, o SPA
 ```
 
-> Em produção, servir os ficheiros estáticos de `dist/` com um servidor web (nginx, Caddy) e apontar `/api/*` para o processo Node.
+Em produção, um reverse proxy (nginx/Caddy) pode servir `dist/` e encaminhar `/api/*`
+para o processo Node, ou o próprio processo serve `dist/`.
 
 ---
 

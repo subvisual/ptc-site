@@ -1,4 +1,5 @@
 import { SITE, T } from '@/lib/tokens';
+import { safeHref } from '@/lib/safeHref';
 
 export interface DisplayEvent {
   id: string;
@@ -164,7 +165,7 @@ export function EventRow({ event, onCommunityClick }: EventRowProps) {
 
       {/* Action */}
       <div>
-        <a href={event.eventUrl || '#'} target="_blank" rel="noopener noreferrer" style={{
+        <a href={safeHref(event.eventUrl)} target="_blank" rel="noopener noreferrer" style={{
           fontFamily: '"Space Grotesk", sans-serif',
           fontWeight: 600, fontSize: 13,
           background: T.ink, color: T.limestone,
