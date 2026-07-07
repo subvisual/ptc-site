@@ -129,9 +129,12 @@ communitiesRouter.post(
 			if (!parsed.ok) return res.status(400).json({ error: parsed.error });
 			const { name, email, role, communityId } = parsed.data;
 
-			// Confirm the community actually exists before linking a leader to it.
+			// Confirm the community actually exists in the communities DB.
 			try {
-				await notion.pages.retrieve({ page_id: communityId });
+				const page = await notion.pages.retrieve({ page_id: communityId });
+				if (!pageInDatabase(page, COMMUNITIES_DB())) {
+					return res.status(400).json({ error: "Comunidade inválida." });
+				}
 			} catch {
 				return res.status(400).json({ error: "Comunidade inválida." });
 			}

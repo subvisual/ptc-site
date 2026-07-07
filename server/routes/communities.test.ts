@@ -37,7 +37,14 @@ beforeEach(() => {
 
 describe("submit-leader", () => {
 	it("creates the leader as unapproved", async () => {
-		mock.pages.retrieve.mockResolvedValueOnce({ id: "c1", properties: {} });
+		mock.pages.retrieve.mockResolvedValueOnce({
+			id: "c1",
+			parent: {
+				type: "database_id",
+				database_id: "358caae5-8631-80b0-af88-d19d858259f5",
+			},
+			properties: {},
+		});
 		mock.pages.create.mockResolvedValueOnce({ id: "l1", properties: {} });
 		await request(app())
 			.post("/api/communities/submit-leader")

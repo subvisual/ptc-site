@@ -200,9 +200,9 @@ export async function getLeaderByEmail(
 export async function getLeaders(pendingOnly = false): Promise<NotionLeader[]> {
 	const results = await queryAll({
 		database_id: COMMUNITY_LEADERS_DB,
-		filter: pendingOnly
-			? { property: "Approved", checkbox: { equals: false } }
-			: undefined,
+		...(pendingOnly
+			? { filter: { property: "Approved", checkbox: { equals: false } } }
+			: {}),
 	});
 	return results.map(parseLeader);
 }

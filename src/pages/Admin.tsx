@@ -403,14 +403,19 @@ function LeadersSection({ communities }: { communities: ApiCommunity[] }) {
   const load = useCallback(async () => {
     setLoading(true);
     try { setLeaders(await api.getLeaders(false)); }
+    catch (e: any) { setMsg('Erro: ' + (e.message ?? 'falha ao carregar')); }
     finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
 
   async function toggle(l: ApiLeader) {
-    const updated = await api.updateLeader(l.notionId, !l.approved);
-    setLeaders(prev => prev.map(x => x.notionId === updated.notionId ? updated : x));
-    setMsg('Guardado ✓'); setTimeout(() => setMsg(''), 2000);
+    try {
+      const updated = await api.updateLeader(l.notionId, !l.approved);
+      setLeaders(prev => prev.map(x => x.notionId === updated.notionId ? updated : x));
+      setMsg('Guardado ✓'); setTimeout(() => setMsg(''), 2000);
+    } catch (e: any) {
+      setMsg('Erro: ' + (e.message ?? 'falha ao guardar'));
+    }
   }
 
   const pending = leaders.filter(l => !l.approved);
