@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
     "dev": "concurrently -n api,vite -c cyan,green \"tsx watch server/index.ts\" \"vite dev\"",
     "dev:vite": "vite dev",
@@ -27,6 +30,7 @@
     "react-dom": "19.1.0",
     "resend": "^6.12.4",
     "tailwind-merge": "3.5.0",
+    "tsx": "^4.22.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -42,14 +46,9 @@
     "dotenv": "^17.4.2",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.1.14",
-    "tsx": "^4.22.3",
     "typescript": "^5.8.3",
     "vite": "^7.3.6",
     "vitest": "^3"
   },
-  "pnpm": {
-    "overrides": {
-      "form-data@>=4.0.0 <4.0.6": ">=4.0.6"
-    }
-  }
+  "packageManager": "pnpm@11.10.0+sha512.0b7f8b98060031904c017e3a41eb187a16d40eeb829b95c4f8cb03681761fc4ab53dd219115b9b447f4dce1a05a214764461e7d3703392a9f32f9511ce8c86c8"
 }

@@ -1,0 +1,10 @@
+# pnpm 11 reads these settings here (no longer from the "pnpm" field in package.json).
+
+# esbuild (a dependency of vite and tsx) needs its install script to set up its
+# native binary; without this pnpm blocks it and `pnpm install` exits non-zero.
+allowBuilds:
+  esbuild: true
+
+# Security floor: force the patched form-data (>=4.0.6) across the tree.
+overrides:
+  form-data@>=4.0.0 <4.0.6: ">=4.0.6"
