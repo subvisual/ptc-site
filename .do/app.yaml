@@ -1,0 +1,52 @@
+# DigitalOcean App Platform spec for ptc-site.
+#
+# Deploy/update with:
+#   doctl apps create --spec .do/app.yaml       # first time
+#   doctl apps update <app-id> --spec .do/app.yaml
+#
+# SECRETS ARE NOT IN THIS FILE. After the app exists, set these on the WEB
+# COMPONENT (App → Settings → web → Environment Variables), each as an
+# encrypted variable, RUN_TIME scope:
+#   - NOTION_TOKEN
+#   - ADMIN_PASSWORD      (non-default; server refuses to boot otherwise)
+#   - SESSION_SECRET      (>= 32 chars, unique)
+# Optional (only for the leaders-portal magic-link emails; skip for now):
+#   - RESEND_API_KEY
+#
+# CAUTION: `doctl apps update --spec` replaces the whole app config, so any
+# secret set only in the dashboard (and absent here) is DROPPED on the next
+# spec update. Push code changes via git (auto-deploy, leaves envs alone); if
+# you must update via spec, re-add the secrets to the spec first.
+name: ptc-site
+region: fra
+services:
+  - name: web
+    environment_slug: node-js
+    source_dir: /
+    github:
+      repo: subvisual/ptc-site
+      branch: main
+      deploy_on_push: true
+    build_command: pnpm build
+    run_command: pnpm start
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    health_check:
+      http_path: /health
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+      - key: SITE_URL
+        value: ${APP_URL}
+        scope: RUN_TIME
+      - key: RESEND_FROM
+        value: noreply@ptc.pt
+        scope: RUN_TIME
+      - key: NOTION_EVENTS_DB
+        value: 358caae5-8631-8009-a521-000bba763510
+        scope: RUN_TIME
+      - key: NOTION_COMMUNITIES_DB
+        value: 358caae5-8631-8006-8b92-000b7084f601
+        scope: RUN_TIME

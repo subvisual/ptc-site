@@ -14,7 +14,8 @@ import { portalRouter } from "./routes/portal.js";
 validateEnv();
 
 const app = express();
-const PORT = Number(process.env.API_PORT ?? 3001);
+// App Platform (and most PaaS) inject PORT; fall back to API_PORT/3001 for local dev.
+const PORT = Number(process.env.PORT ?? process.env.API_PORT ?? 3001);
 const isProd = process.env.NODE_ENV === "production";
 
 // Behind a reverse proxy in production: trust it so req.ip (used for rate

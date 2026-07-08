@@ -170,6 +170,63 @@ para o processo Node, ou o próprio processo serve `dist/`.
 
 ---
 
+## Deploy — DigitalOcean App Platform
+
+O deploy usa **App Platform** (buildpack Node, sem Dockerfile). O spec está
+versionado em [`.do/app.yaml`](.do/app.yaml): um único serviço web que corre
+`pnpm build` e depois `pnpm start` — o processo Express serve `/api/*` e o SPA
+(`dist/`) na porta injetada pela plataforma (`PORT`).
+
+### Primeiro deploy
+
+1. Instala e autentica o [`doctl`](https://docs.digitalocean.com/reference/doctl/how-to/install/).
+2. Cria a app a partir do spec:
+   ```bash
+   doctl apps create --spec .do/app.yaml
+   ```
+3. Define as variáveis **secretas** no **componente `web`**
+   (**App → Settings → web → Environment Variables**), tipo *Encrypted*,
+   scope *Run Time* — não a nível da app (só o `web` precisa delas):
+
+   | Variável | Notas |
+   |----------|-------|
+   | `NOTION_TOKEN` | token de integração Notion |
+   | `ADMIN_PASSWORD` | valor forte, não-default (o servidor recusa arrancar caso contrário) |
+   | `SESSION_SECRET` | ≥ 32 caracteres, único |
+
+   As não-secretas (`NODE_ENV`, `SITE_URL`, `RESEND_FROM`, `NOTION_EVENTS_DB`,
+   `NOTION_COMMUNITIES_DB`) já vêm no spec. `SITE_URL=${APP_URL}` resolve
+   automaticamente para o URL público (`*.ondigitalocean.app`).
+
+   `RESEND_API_KEY` é **opcional** — só é preciso para os magic links do portal
+   de líderes. Sem ela o site e o admin funcionam; falha apenas o envio do email
+   de convite. Fica para quando o domínio de email estiver verificado no Resend.
+
+### Deploys seguintes
+
+`deploy_on_push: true` está ativo — cada push para `main` no GitHub dispara um
+build e deploy automáticos; alterações de **código** vão por aqui e não mexem
+nas env vars.
+
+> ⚠️ `doctl apps update --spec` **substitui** toda a config da app: qualquer
+> secret definido só no dashboard (e ausente do spec) é **apagado** no próximo
+> update. Para mudar o próprio spec, volta a incluir os secrets antes de correr:
+>
+> ```bash
+> doctl apps update <app-id> --spec .do/app.yaml
+> ```
+
+### Domínio próprio (mais tarde)
+
+Adiciona o domínio no dashboard (ou um bloco `domains:` no spec). Como `SITE_URL`
+usa `${APP_URL}`, resolve sozinho; se precisares de o fixar, muda esse único valor.
+
+> ⚠️ **Logs:** o magic link do portal viaja no path (`/api/portal/auth/:token`).
+> Os logs de plataforma da DO podem registar paths de pedidos e **não é possível
+> limpá-los**. Os tokens são de uso único e expiram em 24h, o que limita o risco.
+
+---
+
 ## Comandos úteis
 
 ```bash
